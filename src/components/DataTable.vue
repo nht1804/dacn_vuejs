@@ -16,15 +16,27 @@
                 <td>{{ item.role.roleName }}</td>
                 <td>
                     <n-thing>
-                        First Name: {{item.information.firstName}}
-                        <br />First Name: {{item.information.lastName}}
-                        <br />Date of birth: {{item.information.dateOfBirth}}
-                        <br />Address: {{item.information.address}}
-                        <br />Number: {{item.information.number}}
+                        First Name: {{ item.information.firstName }}
+                        <br />
+                        First Name: {{ item.information.lastName }}
+                        <br />
+                        Date of birth: {{ item.information.dateOfBirth }}
+                        <br />
+                        Gender: {{ item.information.gender }}
+                        <br />
+                        Address: {{ item.information.address }}
+                        <br />
+                        Number: {{ item.information.number }}
                     </n-thing>
                 </td>
                 <td>
-                    <n-button strong secondary circle type="info">
+                    <n-button
+                        strong
+                        secondary
+                        circle
+                        type="info"
+                        @click="showModal.status = true, showModal.id = item.id"
+                    >
                         <template #icon>
                             <n-icon>
                                 <BuildIcon />
@@ -35,13 +47,6 @@
                         <template #icon>
                             <n-icon>
                                 <TrashIcon />
-                            </n-icon>
-                        </template>
-                    </n-button>
-                    <n-button strong secondary circle type="info">
-                        <template #icon>
-                            <n-icon>
-                                <SaveIcon />
                             </n-icon>
                         </template>
                     </n-button>
@@ -56,13 +61,39 @@
             </tr>
         </tbody>
     </n-table>
+    <n-modal v-model:show="showModal.status">
+        <n-card
+            style="width: 600px"
+            title="Edit user"
+            :bordered="true"
+            size="huge"
+            role="dialog"
+            aria-modal="true"
+        >
+            <template #header-extra>
+                <n-button @click="showModal.status = false" strong secondary circle>
+                    <template #icon>
+                        <n-icon>
+                            <CloseIcon />
+                        </n-icon>
+                    </template>
+                </n-button>
+            </template>
+            {{edit(showModal.id)}}
+            <template #footer>
+                <n-button tertiary @click="showModal.status = false, showModal.id = null">Cancel</n-button>
+                <n-button tertiary @click="showModal.status = false, showModal.id = null">Save</n-button>
+            </template>
+        </n-card>
+    </n-modal>
 </template>
 
 <script>
 import {
     Build as BuildIcon,
     Trash as TrashIcon,
-    Save as SaveIcon
+    Save as SaveIcon,
+    Close as CloseIcon
 } from '@vicons/ionicons5'
 import axios from 'axios'
 export default {
@@ -70,6 +101,10 @@ export default {
         return {
             userUrl: 'https://622caa73087e0e041e10d035.mockapi.io/api/USER',
             user: null,
+            showModal: {
+                status: false,
+                id: null
+            }
         }
     },
     mounted() {
@@ -82,12 +117,20 @@ export default {
             })
     },
     methods: {
-
+        edit(id) {
+            var a = null
+            this.user.forEach((e) => {
+                if (e.id === id)
+                    a = e
+            });
+            return a
+        }
     },
     components: {
         BuildIcon,
         TrashIcon,
-        SaveIcon
+        SaveIcon,
+        CloseIcon
     }
 }
 </script>
