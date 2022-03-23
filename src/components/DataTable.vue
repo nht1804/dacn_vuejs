@@ -1,4 +1,12 @@
 <template>
+    <n-button strong secondary>
+        <template #icon>
+            <n-icon>
+                <AddIcon />
+            </n-icon>
+        </template>
+        Create a user
+    </n-button>
     <n-table :single-line="false" :bordered="true">
         <thead>
             <tr>
@@ -41,7 +49,7 @@
                         secondary
                         circle
                         type="info"
-                        @click="showModal.status = true, edit(item.id)"
+                        @click="showModal.status = true, editUser(item.id)"
                     >
                         <template #icon>
                             <n-icon>
@@ -49,7 +57,7 @@
                             </n-icon>
                         </template>
                     </n-button>
-                    <n-button strong secondary circle type="info">
+                    <n-button strong secondary circle type="info" @click="deleteUser(item.id)">
                         <template #icon>
                             <n-icon>
                                 <TrashIcon />
@@ -183,16 +191,12 @@ import {
     Build as BuildIcon,
     Trash as TrashIcon,
     Save as SaveIcon,
-    Close as CloseIcon
+    Close as CloseIcon,
+    AddCircle as AddIcon
 } from '@vicons/ionicons5'
 import axios from 'axios'
-const getData = () => axios.get(this.userUrl)
-    .then(res => {
-        this.user = res.data
-    })
-    .catch(err => {
-        console.error(err);
-    });
+import { useMessage } from "naive-ui";
+
 export default {
     data() {
         return {
@@ -214,65 +218,69 @@ export default {
             {
                 label: "NONE",
                 value: "NONE"
-            }],
-            role: [{
-                label: '',
-                value: ''
-            }
-            ]
+            }]
         }
     },
     mounted() {
-        axios.get(this.userUrl)
-            .then(res => {
-                this.user = JSON.parse(JSON.stringify(res.data))
-            })
-            .catch(err => {
-                console.error(err);
-            });
-        axios.get(this.roleUrl)
-            .then(res => {
-                this.role = res.data
-            })
-            .catch(err => {
-                console.error(err);
-            });
+        this.getUserData();
     },
     methods: {
-        edit(id) {
+        timeStamp(value) {
+            return new Date(value.slice(0, 10)).getTime()
+        },
+        editUser(id) {
             this.user.forEach(e => {
                 if (e.id === id) {
                     this.showModal.modal = JSON.parse(JSON.stringify(e))
-                    //yyy-mm-dd to unix time
-                    this.showModal.modal.information.dateOfBirth = new Date(e.information.dateOfBirth.slice(0, 10)).getTime()
+                    //yyy-mm-dd to timeStamp
+                    this.showModal.modal.information.dateOfBirth = this.timeStamp(e.information.dateOfBirth)
+                }
+            });
+        }, async getUserData() {
+            this.user = null
+            axios.get(this.userUrl)
+                .then(res => {
+                    this.user = JSON.parse(JSON.stringify(res.data))
+                })
+                .catch(err => {
+                    console.error(err);
+                });
+        },
+        async save() {
+            this.user.forEach(e => {
+                if (e.id === this.showModal.modal.id) {
+                    e = JSON.parse(JSON.stringify(this.showModal.modal))
+                    e.information.dateOfBirth = JSON.parse(JSON.stringify(new Date(e.information.dateOfBirth).toLocaleDateString("sv-SE")))
+                    axios.put(this.userUrl + "/" + e.id, e)
+                        .then(res => {
+                            this.getUserData()
+                            this.showModal.status = false
+                        })
+                        .catch(err => {
+                            console.error(err);
+                        })
                 }
             });
         },
-        save() {
-            this.user.forEach(e => {
-                if (e.id === this.showModal.modal.id) {
-                     e = JSON.parse(JSON.stringify(this.showModal.modal))
-                     e.information.dateOfBirth = JSON.parse(JSON.stringify(new Date(e.information.dateOfBirth).toLocaleDateString("sv-SE")))
-                     axios.put(this.userUrl + "/" + e.id,e)
-                     .then(res => {
-                         console.log(res)
-                         e = res.data
-                         this.showModal.status = false
-                     })
-                     .catch(err => {
-                         console.error(err); 
-                     })
-                }
-            });
+        async deleteUser(id) {
+            axios.delete(this.userUrl + "/" + id)
+                .then(res => {
+                    this.getUserData()
+                })
+                .catch(err => {
+                    console.error(err);
+                })
         }
+
     },
     components: {
         BuildIcon,
         TrashIcon,
         SaveIcon,
-        CloseIcon
+        CloseIcon,
+        AddIcon
 
-    }
+    },
 }
 </script>
 
