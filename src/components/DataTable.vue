@@ -16,17 +16,23 @@
                 <td>{{ item.role.roleName }}</td>
                 <td>
                     <n-thing>
-                        First Name: {{ item.information.firstName }}
+                        <b>First Name:</b>
+                        {{ item.information.firstName }}
+                        <n-divider vertical />
+                        <b>Last Name:</b>
+                        {{ item.information.lastName }}
+                        <n-divider vertical />
+                        <b>Gender:</b>
+                        {{ item.information.gender }}
                         <br />
-                        First Name: {{ item.information.lastName }}
+                        <b>Date of birth:</b>
+                        {{ item.information.dateOfBirth }}
+                        <n-divider vertical />
+                        <b>Number:</b>
+                        {{ item.information.number }}
                         <br />
-                        Date of birth: {{ item.information.dateOfBirth }}
-                        <br />
-                        Gender: {{ item.information.gender }}
-                        <br />
-                        Address: {{ item.information.address }}
-                        <br />
-                        Number: {{ item.information.number }}
+                        <b>Address:</b>
+                        {{ item.information.address }}
                     </n-thing>
                 </td>
                 <td>
@@ -35,7 +41,7 @@
                         secondary
                         circle
                         type="info"
-                        @click="showModal.status = true, showModal.id = item.id"
+                        @click="showModal.status = true, edit(item.id)"
                     >
                         <template #icon>
                             <n-icon>
@@ -62,14 +68,7 @@
         </tbody>
     </n-table>
     <n-modal v-model:show="showModal.status">
-        <n-card
-            style="width: 600px"
-            title="Edit user"
-            :bordered="true"
-            size="huge"
-            role="dialog"
-            aria-modal="true"
-        >
+        <n-card style="width: 600px" title="Edit user" :bordered="true" size="huge" role="dialog">
             <template #header-extra>
                 <n-button @click="showModal.status = false" strong secondary circle>
                     <template #icon>
@@ -79,10 +78,101 @@
                     </template>
                 </n-button>
             </template>
-            {{edit(showModal.id)}}
+            <n-collapse>
+                <n-collapse-item title="Account" name="account">
+                    <n-grid x-gap="12" :cols="3">
+                        <n-gi>
+                            UserID
+                            <n-popover trigger="hover">
+                                <template #trigger>
+                                    <n-input
+                                        disabled
+                                        placeholder="UserID"
+                                        v-model:value="showModal.modal.userID"
+                                    />
+                                </template>
+                                <span>You can't edit this</span>
+                            </n-popover>
+                        </n-gi>
+                        <n-gi>
+                            Password
+                            <n-input
+                                maxlength="12"
+                                show-count
+                                clearable
+                                placeholder="Password"
+                                v-model:value="showModal.modal.password"
+                            />
+                        </n-gi>
+                        <n-gi>
+                            ROLE
+                            <n-select v-model:value="value" :options="role.roleName" />
+                        </n-gi>
+                    </n-grid>
+                </n-collapse-item>
+                <n-collapse-item title="Information" name="information">
+                    <n-grid x-gap="12" :cols="3">
+                        <n-gi>
+                            First Name
+                            <n-input
+                                maxlength="12"
+                                show-count
+                                clearable
+                                placeholder="First Name"
+                                v-model:value="showModal.modal.information.firstName"
+                            />
+                        </n-gi>
+                        <n-gi>
+                            Last Name
+                            <n-input
+                                maxlength="12"
+                                show-count
+                                clearable
+                                placeholder="Last Name"
+                                v-model:value="showModal.modal.information.lastName"
+                            />
+                        </n-gi>
+                        <n-gi>
+                            Gender
+                            <n-select
+                                v-model:value="showModal.modal.information.gender"
+                                :options="gender"
+                            />
+                        </n-gi>
+                    </n-grid>
+                    <br />
+                    <n-grid x-gap="12" :cols="2">
+                        <n-gi>
+                            Date of birth
+                            <n-date-picker
+                                type="date"
+                                clearable
+                                v-model:value="showModal.modal.information.dateOfBirth"
+                            />
+                        </n-gi>
+                        <n-gi>
+                            Phone number
+                            <n-input
+                                maxlength="12"
+                                show-count
+                                clearable
+                                placeholder="Number"
+                                v-model:value="showModal.modal.information.number"
+                            />
+                        </n-gi>
+                    </n-grid>
+                    <br />Address
+                    <n-input
+                        type="textarea"
+                        clearable
+                        placeholder="Address"
+                        v-model:value="showModal.modal.information.address"
+                    />
+                </n-collapse-item>
+            </n-collapse>
             <template #footer>
-                <n-button tertiary @click="showModal.status = false, showModal.id = null">Cancel</n-button>
-                <n-button tertiary @click="showModal.status = false, showModal.id = null">Save</n-button>
+                <n-button tertiary @click="showModal.status = false">Cancel</n-button>
+                <n-button tertiary @click="save()">Save</n-button>
             </template>
         </n-card>
     </n-modal>
@@ -96,34 +186,84 @@ import {
     Close as CloseIcon
 } from '@vicons/ionicons5'
 import axios from 'axios'
+const getData = () => axios.get(this.userUrl)
+    .then(res => {
+        this.user = res.data
+    })
+    .catch(err => {
+        console.error(err);
+    });
 export default {
     data() {
         return {
             userUrl: 'https://622caa73087e0e041e10d035.mockapi.io/api/USER',
+            roleUrl: 'https://622caa73087e0e041e10d035.mockapi.io/api/role',
             user: null,
             showModal: {
                 status: false,
-                id: null
+                modal: null
+            },
+            gender: [{
+                label: "MALE",
+                value: "MALE"
+            },
+            {
+                label: "FEMALE",
+                value: "FEMALE"
+            },
+            {
+                label: "NONE",
+                value: "NONE"
+            }],
+            role: [{
+                label: '',
+                value: ''
             }
+            ]
         }
     },
     mounted() {
         axios.get(this.userUrl)
             .then(res => {
-                this.user = res.data
+                this.user = JSON.parse(JSON.stringify(res.data))
             })
             .catch(err => {
                 console.error(err);
+            });
+        axios.get(this.roleUrl)
+            .then(res => {
+                this.role = res.data
             })
+            .catch(err => {
+                console.error(err);
+            });
     },
     methods: {
         edit(id) {
-            var a = null
-            this.user.forEach((e) => {
-                if (e.id === id)
-                    a = e
+            this.user.forEach(e => {
+                if (e.id === id) {
+                    this.showModal.modal = JSON.parse(JSON.stringify(e))
+                    //yyy-mm-dd to unix time
+                    this.showModal.modal.information.dateOfBirth = new Date(e.information.dateOfBirth.slice(0, 10)).getTime()
+                }
             });
-            return a
+        },
+        save() {
+            this.user.forEach(e => {
+                if (e.id === this.showModal.modal.id) {
+                     e = JSON.parse(JSON.stringify(this.showModal.modal))
+                     e.information.dateOfBirth = JSON.parse(JSON.stringify(new Date(e.information.dateOfBirth).toLocaleDateString("sv-SE")))
+                     axios.put(this.userUrl + "/" + e.id,e)
+                     .then(res => {
+                         console.log(res)
+                         e = res.data
+                         this.showModal.status = false
+                     })
+                     .catch(err => {
+                         console.error(err); 
+                     })
+                }
+            });
         }
     },
     components: {
@@ -131,6 +271,7 @@ export default {
         TrashIcon,
         SaveIcon,
         CloseIcon
+
     }
 }
 </script>
