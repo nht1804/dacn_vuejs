@@ -1,12 +1,14 @@
 <template>
-    <n-button strong secondary>
-        <template #icon>
-            <n-icon>
-                <AddIcon />
-            </n-icon>
-        </template>
-        Create a user
-    </n-button>
+    <n-space justify="end">
+        <n-button strong>
+            <template #icon>
+                <n-icon>
+                    <AddIcon />
+                </n-icon>
+            </template>
+            Create a user
+        </n-button>
+    </n-space>
     <n-table :single-line="false" :bordered="true">
         <thead>
             <tr>
@@ -114,7 +116,7 @@
                         </n-gi>
                         <n-gi>
                             ROLE
-                            <n-select v-model:value="value" :options="role.roleName" />
+                            <n-select v-model:value="value" :options="idk" />
                         </n-gi>
                     </n-grid>
                 </n-collapse-item>
