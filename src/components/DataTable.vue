@@ -1,14 +1,4 @@
 <template>
-    <n-space justify="end">
-        <n-button strong>
-            <template #icon>
-                <n-icon>
-                    <AddIcon />
-                </n-icon>
-            </template>
-            Create a user
-        </n-button>
-    </n-space>
     <n-table :single-line="false" :bordered="true">
         <thead>
             <tr>

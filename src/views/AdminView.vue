@@ -1,20 +1,17 @@
 <template>
-    <n-space vertical>
-        <n-layout has-sider>
-            <adminNavside/>
-            <n-layout>
-                <adminHeader />
-                <n-divider />
-                <n-layout-content>
-                    <n-scrollbar>
-                        <datatb />
-                    </n-scrollbar>
-                </n-layout-content>
-                <n-divider />
-                <n-layout-footer>Footer</n-layout-footer>
-            </n-layout>
+    <n-layout has-sider>
+        <adminNavside />
+        <n-layout>
+            <n-layout-header>
+                    <adminHeader />
+            </n-layout-header>
+            <n-layout-content class="content">
+                <div>
+                    <datatb />
+                </div>
+            </n-layout-content>
         </n-layout>
-    </n-space>
+    </n-layout>
 </template>
 
 <script>
@@ -31,4 +28,8 @@ export default {
 </script>
 
 <style>
+.content {
+    margin-left: 10%;
+    margin-right: 10%;
+}
 </style>
