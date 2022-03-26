@@ -4,7 +4,7 @@
       <b>Page title</b>
       <div class="user">
         <n-dropdown size="large" :options="options">
-          <n-button quaternary circle>
+          <n-button type="info" round circle dashed>
             <n-icon size="30">
               <PersonCircle />
             </n-icon>
@@ -57,7 +57,7 @@ export default {
   padding: 10px;
   margin-bottom: 5px;
   margin-top: 10px;
-  margin-left: 50px;
+  margin-left: 300px;
   margin-right: 50px;
 }
 .header-admin b {

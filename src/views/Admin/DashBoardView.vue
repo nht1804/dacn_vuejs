@@ -6,14 +6,14 @@
                 <adminHeader />
             </n-layout-header>
             <n-layout-content class="content">
-                <datatb />
+                DashBoard
             </n-layout-content>
         </n-layout>
     </n-layout>
 </template>
 
 <script>
-import datatb from '@/components/UserTable.vue'
+import datatb from '@/components/DataTable.vue'
 import adminHeader from '@/components/AdminHeader.vue'
 import adminNavside from '@/components/AdminNavSide.vue'
 export default {

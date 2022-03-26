@@ -1,27 +1,16 @@
 <template>
   <n-config-provider :theme="darkTheme">
     <n-layout-sider
-      bordered
-      collapse-mode="width"
-      :collapsed-width="55"
-      style="position:fixed; height: 100%;"
-      :collapsed="collapsed"
-      show-trigger
-      @collapse="collapsed = true"
-      @expand="collapsed = false"
+      style="position: fixed; height: 100%;"
     >
       <div class="logoSide">
         <n-icon style="top:5px">
           <LogoVue />
         </n-icon>
-        <b v-if="collapsed === false">Logo</b>
+        <b>Logo</b>
       </div>
       <n-menu
-        v-model:value="activeKey"
-        :collapsed="collapsed"
         :options="menuOptions"
-        :collapsed-icon-size="30"
-        @update:value="handleUpdateValue"
       />
     </n-layout-sider>
   </n-config-provider>
@@ -48,7 +37,6 @@ function renderIcon(icon) {
 export default {
   data() {
     return {
-      collapsed: false,
       darkTheme,
       menuOptions: [{
         label: () => h(RouterLink, {

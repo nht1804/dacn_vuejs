@@ -2,6 +2,17 @@
     <n-table :single-line="false" :bordered="true">
         <thead>
             <tr>
+                <th colspan="5">
+                    <n-space justify="end">
+                        <n-button
+                            @click="showModal.addUser = true, showModal.modal = {}"
+                        >Create User</n-button>
+                    </n-space>
+                </th>
+            </tr>
+        </thead>
+        <thead>
+            <tr>
                 <th>UserID</th>
                 <th>Password</th>
                 <th>Role</th>
@@ -58,6 +69,11 @@
                     </n-button>
                 </td>
             </tr>
+            <tr>
+                <th colspan="5">
+                    <n-space justify="end">Page</n-space>
+                </th>
+            </tr>
         </tbody>
         <tbody v-else>
             <tr>
@@ -101,12 +117,16 @@
                                 show-count
                                 clearable
                                 placeholder="Password"
+                                :rules="rules"
                                 v-model:value="showModal.modal.password"
                             />
                         </n-gi>
                         <n-gi>
                             ROLE
-                            <n-select v-model:value="value" :options="idk" />
+                            <n-select
+                                v-model:value="showModal.modal.role.roleName"
+                                :options="roleOption"
+                            />
                         </n-gi>
                     </n-grid>
                 </n-collapse-item>
@@ -176,6 +196,44 @@
             </template>
         </n-card>
     </n-modal>
+    <n-modal v-model:show="showModal.addUser">
+        <n-card style="width: 600px" title="Add user" :bordered="true" size="huge" role="dialog">
+            <template #header-extra>
+                <n-button @click="showModal.addUser = false" strong secondary circle>
+                    <template #icon>
+                        <n-icon>
+                            <CloseIcon />
+                        </n-icon>
+                    </template>
+                </n-button>
+            </template>
+            <n-grid x-gap="12" :cols="3">
+                <n-gi>
+                    UserID
+                    <n-input placeholder="UserID" v-model:value="showModal.modal.userID" />
+                </n-gi>
+                <n-gi>
+                    Password
+                    <n-input
+                        maxlength="12"
+                        show-count
+                        clearable
+                        placeholder="Password"
+                        v-model:value="showModal.modal.password"
+                    />
+                </n-gi>
+                <n-gi>
+                    ROLE
+                    <n-select :options="roleOption" />
+                </n-gi>
+            </n-grid>
+            <template #footer>
+                <n-button tertiary @click="showModal.addUser = false">Cancel</n-button>
+                <n-button tertiary @click="addUser(showModal.modal)">Save</n-button>
+                <n-button tertiary @click="test()">test</n-button>
+            </template>
+        </n-card>
+    </n-modal>
 </template>
 
 <script>
@@ -187,7 +245,6 @@ import {
     AddCircle as AddIcon
 } from '@vicons/ionicons5'
 import axios from 'axios'
-import { useMessage } from "naive-ui";
 
 export default {
     data() {
@@ -196,8 +253,9 @@ export default {
             roleUrl: 'https://622caa73087e0e041e10d035.mockapi.io/api/role',
             user: null,
             showModal: {
+                addUser: false,
                 status: false,
-                modal: null
+                modal: {}
             },
             gender: [{
                 label: "MALE",
@@ -210,6 +268,16 @@ export default {
             {
                 label: "NONE",
                 value: "NONE"
+            }],
+            roleOption: [{
+                label: 'ROLE LABEL',
+                value: {
+                    role: {
+                        id: '1',
+                        roleName: 'A',
+                        roleLevel: 5
+                    }
+                }
             }]
         }
     },
@@ -221,6 +289,7 @@ export default {
             return new Date(value.slice(0, 10)).getTime()
         },
         editUser(id) {
+            this.showModal.modal = {};
             this.user.forEach(e => {
                 if (e.id === id) {
                     this.showModal.modal = JSON.parse(JSON.stringify(e))
@@ -238,6 +307,16 @@ export default {
                     console.error(err);
                 });
         },
+        async getRoleData() {
+            axios.get(this.roleUrl)
+                .then(res => {
+                    this.roleOption.value.role = JSON.parse(JSON.stringify(res.data))
+                })
+                .catch(err => {
+                    console.error(err);
+                });
+        }
+        ,
         async save() {
             this.user.forEach(e => {
                 if (e.id === this.showModal.modal.id) {
@@ -262,6 +341,21 @@ export default {
                 .catch(err => {
                     console.error(err);
                 })
+        },
+        async addUser(user) {
+            console.log(new Date(Date.now()).toLocaleDateString("sv-SE"));
+            axios.post(this.url, user)
+                .then(res => {
+                    this.showModal.addUser = false
+                    this.getUserData()
+                    console.log(res)
+                })
+                .catch(err => {
+                    console.error(err);
+                })
+        },
+        test() {
+            console.log(this.showModal.modal.role)
         }
 
     },
