@@ -117,14 +117,14 @@
                                 show-count
                                 clearable
                                 placeholder="Password"
-                                :rules="rules"
                                 v-model:value="showModal.modal.password"
                             />
                         </n-gi>
                         <n-gi>
                             ROLE
                             <n-select
-                                v-model:value="showModal.modal.role.roleName"
+                                @update:value="handleUpdateRoleValue"
+                                :value="showModal.modal.role.roleName"
                                 :options="roleOption"
                             />
                         </n-gi>
@@ -207,7 +207,7 @@
                     </template>
                 </n-button>
             </template>
-            <n-grid x-gap="12" :cols="3">
+            <n-grid x-gap="12" :cols="2">
                 <n-gi>
                     UserID
                     <n-input placeholder="UserID" v-model:value="showModal.modal.userID" />
@@ -222,15 +222,10 @@
                         v-model:value="showModal.modal.password"
                     />
                 </n-gi>
-                <n-gi>
-                    ROLE
-                    <n-select :options="roleOption" />
-                </n-gi>
             </n-grid>
             <template #footer>
                 <n-button tertiary @click="showModal.addUser = false">Cancel</n-button>
-                <n-button tertiary @click="addUser(showModal.modal)">Save</n-button>
-                <n-button tertiary @click="test()">test</n-button>
+                <n-button tertiary @click="addUser">Add user</n-button>
             </template>
         </n-card>
     </n-modal>
@@ -252,10 +247,12 @@ export default {
             userUrl: 'https://622caa73087e0e041e10d035.mockapi.io/api/USER',
             roleUrl: 'https://622caa73087e0e041e10d035.mockapi.io/api/role',
             user: null,
+            role: [],
+            roleOption: [],
             showModal: {
                 addUser: false,
                 status: false,
-                modal: {}
+                modal: { information: {}, role: {} }
             },
             gender: [{
                 label: "MALE",
@@ -268,21 +265,12 @@ export default {
             {
                 label: "NONE",
                 value: "NONE"
-            }],
-            roleOption: [{
-                label: 'ROLE LABEL',
-                value: {
-                    role: {
-                        id: '1',
-                        roleName: 'A',
-                        roleLevel: 5
-                    }
-                }
             }]
         }
     },
     mounted() {
-        this.getUserData();
+        this.getUserData()
+        this.getRoleData()
     },
     methods: {
         timeStamp(value) {
@@ -295,6 +283,7 @@ export default {
                     this.showModal.modal = JSON.parse(JSON.stringify(e))
                     //yyy-mm-dd to timeStamp
                     this.showModal.modal.information.dateOfBirth = this.timeStamp(e.information.dateOfBirth)
+                    return
                 }
             });
         }, async getUserData() {
@@ -310,7 +299,10 @@ export default {
         async getRoleData() {
             axios.get(this.roleUrl)
                 .then(res => {
-                    this.roleOption.value.role = JSON.parse(JSON.stringify(res.data))
+                    this.role = JSON.parse(JSON.stringify(res.data))
+                    res.data.forEach(e => {
+                        this.roleOption.push({ label: e.roleName, value: e.id })
+                    })
                 })
                 .catch(err => {
                     console.error(err);
@@ -330,6 +322,7 @@ export default {
                         .catch(err => {
                             console.error(err);
                         })
+                    return
                 }
             });
         },
@@ -342,9 +335,8 @@ export default {
                     console.error(err);
                 })
         },
-        async addUser(user) {
-            console.log(new Date(Date.now()).toLocaleDateString("sv-SE"));
-            axios.post(this.url, user)
+        async addUser() {
+            axios.post(this.userUrl, this.showModal.modal)
                 .then(res => {
                     this.showModal.addUser = false
                     this.getUserData()
@@ -354,9 +346,14 @@ export default {
                     console.error(err);
                 })
         },
-        test() {
-            console.log(this.showModal.modal.role)
-        }
+        handleUpdateRoleValue(value) {
+            this.role.forEach(e => {
+                if (e.id === value) {
+                    this.showModal.modal.role = e
+                    return
+                }
+            })
+        },
 
     },
     components: {
