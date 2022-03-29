@@ -5,9 +5,7 @@
             <n-layout-header>
                 <adminHeader />
             </n-layout-header>
-            <n-layout-content class="content">
-                <datatb />
-            </n-layout-content>
+            <RouterView />
         </n-layout>
     </n-layout>
 </template>

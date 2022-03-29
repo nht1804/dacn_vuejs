@@ -7,6 +7,6 @@
     <br>
     <RouterLink to="/about">About</RouterLink>
     <br>
-    <RouterLink :to="{name:'admin'}">Admin</RouterLink>
+    <RouterLink to="/admin">Admin</RouterLink>
   </main>
 </template>

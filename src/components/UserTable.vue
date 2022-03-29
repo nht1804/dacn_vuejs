@@ -252,7 +252,7 @@ export default {
             showModal: {
                 addUser: false,
                 status: false,
-                modal: { information: {}, role: {} }
+                modal: {}
             },
             gender: [{
                 label: "MALE",

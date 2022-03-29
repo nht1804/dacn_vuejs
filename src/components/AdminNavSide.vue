@@ -1,23 +1,19 @@
 <template>
   <n-config-provider :theme="darkTheme">
-    <n-layout-sider
-      style="position: fixed; height: 100%;"
-    >
+    <n-layout-sider style="position: fixed; height: 100%;">
       <div class="logoSide">
         <n-icon style="top:5px">
           <LogoVue />
         </n-icon>
-        <b>Logo</b>
+        <b>3</b>
       </div>
-      <n-menu
-        :options="menuOptions"
-      />
+      <n-menu :options="menuOptions" :default-value="this.$route.meta.page"/>
     </n-layout-sider>
   </n-config-provider>
 </template>
 
 <script>
-import { darkTheme, NIcon } from 'naive-ui'
+import { darkTheme, NIcon,NEllipsis  } from 'naive-ui'
 import { RouterLink } from "vue-router"
 import { h } from 'vue'
 import {
@@ -52,7 +48,7 @@ export default {
       {
         label: () => h(RouterLink, {
           to: {
-            name: "home", params: {
+            name: "dashboard", params: {
               lang: "en-US"
             }
           }
@@ -65,17 +61,29 @@ export default {
         key: "table",
         icon: renderIcon(Cube),
         children: [{
-          label: 'User',
-          key: 'user-table',
+          label: () => h(RouterLink, {
+            to: {
+              name: "userTable", params: {
+                lang: "en-US"
+              }
+            }
+          }, { default: () => "User" }),
+          key: "userTable",
           icon: renderIcon(People)
         }, {
           label: 'Role',
-          key: 'role-table',
+          key: 'roleTable',
           icon: renderIcon(Diamond)
         },
         {
-          label: 'Car',
-          key: 'car-table',
+          label: () => h(RouterLink, {
+            to: {
+              name: "carTable", params: {
+                lang: "en-US"
+              }
+            }
+          }, { default: () => "Car" }),
+          key: "carTable",
           icon: renderIcon(Car)
         },
         {

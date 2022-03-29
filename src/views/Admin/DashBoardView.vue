@@ -1,27 +1,16 @@
 <template>
-    <n-layout has-sider>
-        <adminNavside />
-        <n-layout>
-            <n-layout-header>
-                <adminHeader />
-            </n-layout-header>
-            <n-layout-content class="content">
-                DashBoard
-            </n-layout-content>
-        </n-layout>
-    </n-layout>
+    <n-layout-content class="content">DashBoard</n-layout-content>
 </template>
 
 <script>
-import datatb from '@/components/DataTable.vue'
-import adminHeader from '@/components/AdminHeader.vue'
-import adminNavside from '@/components/AdminNavSide.vue'
 export default {
     data() {
         return {
         }
     },
-    components: { datatb, adminHeader, adminNavside }
+    mounted() {
+        console.log(this.$route.meta.lmao)
+    }
 }
 </script>
 

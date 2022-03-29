@@ -21,6 +21,26 @@ const router = createRouter({
       path: "/admin",
       name: "admin",
       component: () => import("../views/AdminView.vue"),
+      children: [
+        {
+          path: "",
+          name: "dashboard",
+          component: () => import("../views/Admin/DashBoardView.vue"),
+          meta: { page: "dashboard" },
+        },
+        {
+          path: "CarTable",
+          name: "carTable",
+          component: () => import("../views/Admin/CarTableView.vue"),
+          meta: { page: "carTable" },
+        },
+        {
+          path: "UserTable",
+          name: "userTable",
+          component: () => import("../views/Admin/UserTableView.vue"),
+          meta: { page: "userTable" },
+        },
+      ],
     },
   ],
 });

@@ -1,27 +1,17 @@
 <template>
-    <n-layout has-sider>
-        <adminNavside />
-        <n-layout>
-            <n-layout-header>
-                <adminHeader />
-            </n-layout-header>
-            <n-layout-content class="content">
-                <datatb />
-            </n-layout-content>
-        </n-layout>
-    </n-layout>
+    <n-layout-content class="content">
+        <datatb />
+    </n-layout-content>
 </template>
 
 <script>
 import datatb from '@/components/UserTable.vue'
-import adminHeader from '@/components/AdminHeader.vue'
-import adminNavside from '@/components/AdminNavSide.vue'
 export default {
     data() {
         return {
         }
     },
-    components: { datatb, adminHeader, adminNavside }
+    components: { datatb }
 }
 </script>
 
