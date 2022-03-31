@@ -13,7 +13,7 @@
         </thead>
         <thead>
             <tr>
-                <th>UserID</th>
+                <th>UserName</th>
                 <th>Password</th>
                 <th>Role</th>
                 <th>information</th>
@@ -22,7 +22,7 @@
         </thead>
         <tbody v-if="user">
             <tr v-for="item in user" :key="item.id">
-                <td>{{ item.userID }}</td>
+                <td>{{ item.userName }}</td>
                 <td>{{ item.password }}</td>
                 <td>{{ item.role.roleName }}</td>
                 <td>
@@ -47,13 +47,7 @@
                     </n-thing>
                 </td>
                 <td>
-                    <n-button
-                        strong
-                        secondary
-                        circle
-                        type="info"
-                        @click="showModal.status = true, editUser(item.id)"
-                    >
+                    <n-button strong secondary circle type="info" @click="editUser(item.id)">
                         <template #icon>
                             <n-icon>
                                 <BuildIcon />
@@ -98,13 +92,13 @@
                 <n-collapse-item title="Account" name="account">
                     <n-grid x-gap="12" :cols="3">
                         <n-gi>
-                            UserID
+                            UserName
                             <n-popover trigger="hover">
                                 <template #trigger>
                                     <n-input
                                         disabled
-                                        placeholder="UserID"
-                                        v-model:value="showModal.modal.userID"
+                                        placeholder="UserName"
+                                        v-model:value="showModal.modal.userName"
                                     />
                                 </template>
                                 <span>You can't edit this</span>
@@ -191,8 +185,10 @@
                 </n-collapse-item>
             </n-collapse>
             <template #footer>
-                <n-button tertiary @click="showModal.status = false">Cancel</n-button>
-                <n-button tertiary @click="save()">Save</n-button>
+                <n-space justify="end">
+                    <n-button tertiary @click="showModal.status = false">Cancel</n-button>
+                    <n-button tertiary @click="save()">Save</n-button>
+                </n-space>
             </template>
         </n-card>
     </n-modal>
@@ -209,8 +205,8 @@
             </template>
             <n-grid x-gap="12" :cols="2">
                 <n-gi>
-                    UserID
-                    <n-input placeholder="UserID" v-model:value="showModal.modal.userID" />
+                    UserName
+                    <n-input placeholder="UserName" v-model:value="showModal.modal.userName" />
                 </n-gi>
                 <n-gi>
                     Password
@@ -224,8 +220,10 @@
                 </n-gi>
             </n-grid>
             <template #footer>
-                <n-button tertiary @click="showModal.addUser = false">Cancel</n-button>
-                <n-button tertiary @click="addUser">Add user</n-button>
+                <n-space justify="end">
+                    <n-button tertiary @click="showModal.addUser = false">Cancel</n-button>
+                    <n-button tertiary @click="addUser">Add user</n-button>
+                </n-space>
             </template>
         </n-card>
     </n-modal>
@@ -244,8 +242,8 @@ import axios from 'axios'
 export default {
     data() {
         return {
-            userUrl: 'https://622caa73087e0e041e10d035.mockapi.io/api/USER',
-            roleUrl: 'https://622caa73087e0e041e10d035.mockapi.io/api/role',
+            userUrl: 'http://localhost:8080/api/User',
+            roleUrl: 'http://localhost:8080/api/Role',
             user: null,
             role: [],
             roleOption: [],
@@ -276,21 +274,24 @@ export default {
         timeStamp(value) {
             return new Date(value.slice(0, 10)).getTime()
         },
-        editUser(id) {
+        async editUser(id) {
             this.showModal.modal = {};
-            this.user.forEach(e => {
-                if (e.id === id) {
-                    this.showModal.modal = JSON.parse(JSON.stringify(e))
+            axios.get(this.userUrl + "/id/" + id)
+                .then(res => {
+                    let d = res.data.data
+                    this.showModal.modal = d
                     //yyy-mm-dd to timeStamp
-                    this.showModal.modal.information.dateOfBirth = this.timeStamp(e.information.dateOfBirth)
-                    return
-                }
-            });
+                    this.showModal.modal.information.dateOfBirth = this.timeStamp(d.information.dateOfBirth)
+                    this.showModal.status = true
+                })
+                .catch(err => {
+                    console.error(err);
+                })
         }, async getUserData() {
             this.user = null
             axios.get(this.userUrl)
                 .then(res => {
-                    this.user = JSON.parse(JSON.stringify(res.data))
+                    this.user = JSON.parse(JSON.stringify(res.data.data))
                 })
                 .catch(err => {
                     console.error(err);
@@ -299,8 +300,8 @@ export default {
         async getRoleData() {
             axios.get(this.roleUrl)
                 .then(res => {
-                    this.role = JSON.parse(JSON.stringify(res.data))
-                    res.data.forEach(e => {
+                    this.role = JSON.parse(JSON.stringify(res.data.data))
+                    res.data.data.forEach(e => {
                         this.roleOption.push({ label: e.roleName, value: e.id })
                     })
                 })
@@ -314,7 +315,7 @@ export default {
                 if (e.id === this.showModal.modal.id) {
                     e = JSON.parse(JSON.stringify(this.showModal.modal))
                     e.information.dateOfBirth = JSON.parse(JSON.stringify(new Date(e.information.dateOfBirth).toLocaleDateString("sv-SE")))
-                    axios.put(this.userUrl + "/" + e.id, e)
+                    axios.put(this.userUrl, e)
                         .then(res => {
                             this.getUserData()
                             this.showModal.status = false
@@ -326,8 +327,12 @@ export default {
                 }
             });
         },
-        async deleteUser(id) {
-            axios.delete(this.userUrl + "/" + id)
+        async deleteUser(userID) {
+            axios.delete(this.userUrl, {
+                data: {
+                    id: userID
+                }
+            })
                 .then(res => {
                     this.getUserData()
                 })
@@ -354,7 +359,6 @@ export default {
                 }
             })
         },
-
     },
     components: {
         BuildIcon,

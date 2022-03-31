@@ -4,7 +4,9 @@
             <tr>
                 <th colspan="6">
                     <n-space justify="end">
-                        <n-button>Add a car</n-button>
+                        <n-button
+                            @click="showModal.status = true, showModal.modal = {}, showModal.addCar = true"
+                        >Add a car</n-button>
                     </n-space>
                 </th>
             </tr>
@@ -15,7 +17,8 @@
                 <th>Type</th>
                 <th>Image</th>
                 <th>Manufacturer</th>
-                <th>status</th>
+                <th>Status</th>
+                <th>Price</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -26,8 +29,9 @@
                 <td>{{ item.image }}</td>
                 <td>{{ item.manufacturer }}</td>
                 <td>{{ item.status }}</td>
+                <td>{{ item.price }}</td>
                 <td>
-                    <n-button strong secondary circle type="info" @click="showModal.status = true">
+                    <n-button strong secondary circle type="info" @click="editCar(item.id)">
                         <template #icon>
                             <n-icon>
                                 <BuildIcon />
@@ -71,33 +75,39 @@
             <n-grid x-gap="12" y-gap="12" :cols="3">
                 <n-gi>
                     Name
-                    <n-input placeholder="Name" />
+                    <n-input placeholder="Name" v-model:value="showModal.modal.name" />
                 </n-gi>
                 <n-gi>
                     Manufacturer
-                    <n-input clearable placeholder="Manufacturer" />
+                    <n-input
+                        clearable
+                        placeholder="Manufacturer"
+                        v-model:value="showModal.modal.manufacturer"
+                    />
                 </n-gi>
                 <n-gi>
                     Type
-                    <n-input clearable placeholder="Type" />
+                    <n-input clearable placeholder="Type" v-model:value="showModal.modal.carType" />
                 </n-gi>
                 <n-gi>
                     Status
-                    <n-select />
+                    <n-select v-model:value="showModal.modal.status" :options="statusOption" />
                 </n-gi>
-                <n-gi>
+                <n-gi span="2">
                     Image
-                    <n-input clearable placeholder="Image" />
+                    <n-input clearable placeholder="Image" v-model:value="showModal.modal.image" />
                 </n-gi>
                 <n-gi>
-                    <n-space justify="center">
-                        <n-image width="150" src="http://placeimg.com/640/480/cats" />
-                    </n-space>
+                    Price
+                    <n-input clearable placeholder="Price" v-model:value="showModal.modal.price" />
                 </n-gi>
             </n-grid>
             <template #footer>
-                <n-button tertiary @click="showModal.status = false">Cancel</n-button>
-                <n-button tertiary>Save</n-button>
+                <n-space justify="end">
+                    <n-button tertiary @click="showModal.status = false">Cancel</n-button>
+                    <n-button v-if="showModal.addCar == false" @click="save()" tertiary>Save</n-button>
+                    <n-button v-else tertiary @click="addCar()">Add</n-button>
+                </n-space>
             </template>
         </n-card>
     </n-modal>
@@ -116,13 +126,21 @@ import axios from 'axios'
 export default {
     data() {
         return {
-            carUrl: 'https://622caa73087e0e041e10d035.mockapi.io/api/car',
+            carUrl: 'http://localhost:8080/api/Car',
             car: null,
             showModal: {
-                addUser: false,
+                addCar: false,
                 status: false,
-                modal: []
+                modal: [],
             },
+            statusOption: [{
+                label: "true",
+                value: "true"
+            },
+            {
+                label: "false",
+                value: "false"
+            }]
         }
     },
     mounted() {
@@ -132,12 +150,59 @@ export default {
         async getCar() {
             axios.get(this.carUrl)
                 .then(res => {
-                    this.car = JSON.parse(JSON.stringify(res.data))
+                    this.car = res.data.data
+                })
+                .catch(err => {
+                    console.error(err);
+                })
+        },
+        async editCar(id) {
+            this.showModal.modal = {}
+            axios.get(this.carUrl + "/id/" + id)
+                .then(res => {
+                    this.showModal.modal = res.data.data
+                    this.showModal.addCar = false;
+                    this.showModal.status = true;
+                    this.getCar();
+                })
+                .catch(err => {
+                    console.error(err);
+                })
+        },
+        async addCar() {
+            axios.post(this.carUrl, this.showModal.modal)
+                .then(res => {
+                    this.showModal.status = false;
+                    this.getCar();
+                })
+                .catch(err => {
+                    console.error(err);
+                })
+        },
+        async save() {
+            axios.put(this.carUrl, this.showModal.modal)
+                .then(res => {
+                    this.showModal.status = false;
+                    this.getCar();
+                })
+                .catch(err => {
+                    console.error(err);
+                })
+        },
+        async deleteCar(carID) {
+            axios.delete(this.carUrl, {
+                data: {
+                    id: carID
+                }
+            })
+                .then(res => {
+                   this.getCar();
                 })
                 .catch(err => {
                     console.error(err);
                 })
         }
+
     },
     components: {
         BuildIcon,
