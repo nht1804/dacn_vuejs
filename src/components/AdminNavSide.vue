@@ -7,13 +7,13 @@
         </n-icon>
         <b>3</b>
       </div>
-      <n-menu :options="menuOptions" :default-value="this.$route.meta.page"/>
+      <n-menu :options="menuOptions" :default-value="this.$route.meta.page" />
     </n-layout-sider>
   </n-config-provider>
 </template>
 
 <script>
-import { darkTheme, NIcon,NEllipsis  } from 'naive-ui'
+import { darkTheme, NIcon, NEllipsis } from 'naive-ui'
 import { RouterLink } from "vue-router"
 import { h } from 'vue'
 import {
@@ -70,9 +70,16 @@ export default {
           }, { default: () => "User" }),
           key: "userTable",
           icon: renderIcon(People)
-        }, {
-          label: 'Role',
-          key: 'roleTable',
+        },
+        {
+          label: () => h(RouterLink, {
+            to: {
+              name: "roleTable", params: {
+                lang: "en-US"
+              }
+            }
+          }, { default: () => "Role" }),
+          key: "roleTable",
           icon: renderIcon(Diamond)
         },
         {
@@ -89,6 +96,7 @@ export default {
         {
           label: 'Bill',
           key: 'bill-table',
+          disabled: true,
           icon: renderIcon(BagCheck)
         }
         ]

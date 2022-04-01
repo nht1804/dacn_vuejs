@@ -1,5 +1,5 @@
 <template>
-    <n-table :single-line="false" :bordered="true">
+    <n-table :single-line="true" :bordered="true">
         <thead>
             <tr>
                 <th colspan="5">
@@ -43,7 +43,7 @@
                         {{ item.information.number }}
                         <br />
                         <b>Address:</b>
-                        {{ item.information.address }}
+                         <n-ellipsis style="max-width: 240px">{{ item.information.address }}</n-ellipsis>
                     </n-thing>
                 </td>
                 <td>
@@ -180,6 +180,7 @@
                         type="textarea"
                         clearable
                         placeholder="Address"
+                        maxlength="100"
                         v-model:value="showModal.modal.information.address"
                     />
                 </n-collapse-item>

@@ -1,8 +1,8 @@
 <template>
-    <n-table :single-line="false" :bordered="true">
+    <n-table :single-line="true">
         <thead>
             <tr>
-                <th colspan="6">
+                <th colspan="7">
                     <n-space justify="end">
                         <n-button
                             @click="showModal.status = true, showModal.modal = {}, showModal.addCar = true"
@@ -26,9 +26,14 @@
             <tr v-for="item in car" :key="item.id">
                 <td>{{ item.name }}</td>
                 <td>{{ item.carType }}</td>
-                <td>{{ item.image }}</td>
+                <td>
+                    <n-ellipsis style="max-width: 240px">{{ item.image }}</n-ellipsis>
+                </td>
                 <td>{{ item.manufacturer }}</td>
-                <td>{{ item.status }}</td>
+                <td>
+                    <n-tag v-if="item.status == true" type="success">TRUE</n-tag>
+                    <n-tag v-else type="error">FALSE</n-tag>
+                </td>
                 <td>{{ item.price }}</td>
                 <td>
                     <n-button strong secondary circle type="info" @click="editCar(item.id)">
@@ -157,11 +162,11 @@ export default {
                 })
         },
         async editCar(id) {
+            this.showModal.addCar = false;
             this.showModal.modal = {}
             axios.get(this.carUrl + "/id/" + id)
                 .then(res => {
                     this.showModal.modal = res.data.data
-                    this.showModal.addCar = false;
                     this.showModal.status = true;
                     this.getCar();
                 })
@@ -174,6 +179,7 @@ export default {
                 .then(res => {
                     this.showModal.status = false;
                     this.getCar();
+                    this.showModal.addCar = false;
                 })
                 .catch(err => {
                     console.error(err);
@@ -196,13 +202,12 @@ export default {
                 }
             })
                 .then(res => {
-                   this.getCar();
+                    this.getCar();
                 })
                 .catch(err => {
                     console.error(err);
                 })
         }
-
     },
     components: {
         BuildIcon,

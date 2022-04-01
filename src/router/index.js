@@ -40,6 +40,12 @@ const router = createRouter({
           component: () => import("../views/Admin/UserTableView.vue"),
           meta: { page: "userTable" },
         },
+        {
+          path: "RoleTable",
+          name: "roleTable",
+          component: () => import("../views/Admin/RoleTableView.vue"),
+          meta: { page: "roleTable" },
+        },
       ],
     },
   ],
