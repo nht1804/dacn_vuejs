@@ -1,12 +1,14 @@
-<script setup>
+<script>
+import HeaderA from '../components/Header.vue'
+export default {
+  components: {
+    HeaderA
+  }
+}
 </script>
 
 <template>
-  <main>
-    <RouterLink to="/">Home</RouterLink>
-    <br>
-    <RouterLink to="/about">About</RouterLink>
-    <br>
-    <RouterLink to="/admin">Admin</RouterLink>
-  </main>
+    <HeaderA></HeaderA>
 </template>
+<style>
+</style>
