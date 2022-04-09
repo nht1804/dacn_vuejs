@@ -1,9 +1,11 @@
 <template>
     <div class="header">
         <div class="header-logo">
-            <n-icon>
-                <logo />
-            </n-icon>Logo
+            <h1>
+                <n-icon>
+                    <logo />
+                </n-icon>Logo
+            </h1>
         </div>
         <div class="header-menu">
             <RouterLink to="/">Trang chủ</RouterLink>
@@ -33,7 +35,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .header {
     background-color: black;
     overflow: hidden;

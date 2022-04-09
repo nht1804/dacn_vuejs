@@ -1,14 +1,18 @@
 <script>
-import HeaderA from '../components/Header.vue'
+import HomeHeader from '../components/Header.vue'
+import HomeFooter from '../components/Footer.vue'
 export default {
   components: {
-    HeaderA
+    HomeHeader,
+    HomeFooter
   }
 }
 </script>
 
 <template>
-    <HeaderA></HeaderA>
+    <HomeHeader></HomeHeader>
+    <p>Content</p>
+    <HomeFooter></HomeFooter>
 </template>
 <style>
 </style>
