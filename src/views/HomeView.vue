@@ -11,7 +11,7 @@ export default {
 
 <template>
     <HomeHeader></HomeHeader>
-    <p>Content</p>
+    <RouterView />
     <HomeFooter></HomeFooter>
 </template>
 <style>

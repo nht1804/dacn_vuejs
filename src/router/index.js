@@ -8,6 +8,33 @@ const router = createRouter({
       path: "/",
       name: "home",
       component: HomeView,
+      children:[
+        {
+          path: "",
+          name: "index",
+          component: () => import("../views/Public/IndexView.vue")
+        },
+        {
+          path: "/login",
+          name: "login",
+          component: () => import("../views/Public/LoginView.vue")
+        },
+        {
+          path: "/car",
+          name: "car",
+          component: () => import("../views/Public/CarView.vue")
+        },
+        {
+          path: "/car/:id",
+          name: "carDetail",
+          component: () => import("../views/Public/CarDetailView.vue")
+        },
+        {
+          path: "/profile",
+          name: "profile",
+          component: () => import("../views/Public/ProfileView.vue")
+        },
+      ]
     },
     {
       path: "/about",

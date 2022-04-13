@@ -8,15 +8,14 @@
             </h1>
         </div>
         <div class="header-menu">
-            <RouterLink to="/">Trang chủ</RouterLink>
-            <RouterLink to="/">Xe</RouterLink>
-            <RouterLink to="/about">Hướng dẫn</RouterLink>
-            <RouterLink to="/about">Giới thiệu</RouterLink>
+            <RouterLink :to="{name:'index'}">Trang chủ</RouterLink>
+            <RouterLink :to="{name:'car'}">Xe</RouterLink>
+            <RouterLink :to="{name:'index'}">Hướng dẫn</RouterLink>
+            <RouterLink :to="{name:'about'}">Giới thiệu</RouterLink>
             <div class="header-right">
-                <RouterLink to="/admin">Admin</RouterLink>
-                <RouterLink to="/">Đăng nhập</RouterLink>
-                <RouterLink to="/">Đăng kí</RouterLink>
-                <RouterLink to="/">Hello</RouterLink>
+                <RouterLink :to="{name:'dashboard'}">Admin</RouterLink>
+                <RouterLink :to="{name:'login'}">Đăng nhập</RouterLink>
+                <RouterLink :to="{name:'profile'}">Hello</RouterLink>
             </div>
         </div>
     </div>
@@ -61,5 +60,8 @@ a {
 }
 a:hover {
     color: aquamarine;
+}
+.router-link-exact-active{
+    color: #b7a8ff;
 }
 </style>

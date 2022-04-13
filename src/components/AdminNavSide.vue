@@ -36,11 +36,7 @@ export default {
       darkTheme,
       menuOptions: [{
         label: () => h(RouterLink, {
-          to: {
-            name: "home", params: {
-              lang: "en-US"
-            }
-          }
+          to: "/"
         }, { default: () => "Going Home" }),
         key: "go-back-home",
         icon: renderIcon(Home)

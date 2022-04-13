@@ -93,9 +93,9 @@ export default {
 
 <style scoped>
 footer {
-    position: absolute;
-    bottom: 0;
+    position: relative;
     width: 100%;
+    bottom: -100px;
     overflow: hidden;
     background-color: black;
     height: 300px;
