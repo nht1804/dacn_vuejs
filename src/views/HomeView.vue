@@ -1,6 +1,6 @@
 <script>
-import HomeHeader from '../components/Header.vue'
-import HomeFooter from '../components/Footer.vue'
+import HomeHeader from '@/components/Home/Header.vue'
+import HomeFooter from '@/components/Home/Footer.vue'
 export default {
   components: {
     HomeHeader,
@@ -10,9 +10,15 @@ export default {
 </script>
 
 <template>
-    <HomeHeader></HomeHeader>
+  <HomeHeader></HomeHeader>
+
+  <div class="container">
     <RouterView />
-    <HomeFooter></HomeFooter>
+  </div>
+  <HomeFooter></HomeFooter>
 </template>
 <style>
+.container {
+  min-height: 50vh;
+}
 </style>

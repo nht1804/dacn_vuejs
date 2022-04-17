@@ -8,41 +8,46 @@ const router = createRouter({
       path: "/",
       name: "home",
       component: HomeView,
-      children:[
+      children: [
         {
           path: "",
           name: "index",
-          component: () => import("../views/Public/IndexView.vue")
-        },
-        {
-          path: "/login",
-          name: "login",
-          component: () => import("../views/Public/LoginView.vue")
+          component: () => import("../views/Public/IndexView.vue"),
         },
         {
           path: "/car",
           name: "car",
-          component: () => import("../views/Public/CarView.vue")
+          component: () => import("../views/Public/CarView.vue"),
         },
         {
           path: "/car/:id",
           name: "carDetail",
-          component: () => import("../views/Public/CarDetailView.vue")
+          component: () => import("../views/Public/CarDetailView.vue"),
         },
         {
           path: "/profile",
           name: "profile",
-          component: () => import("../views/Public/ProfileView.vue")
+          component: () => import("../views/Public/ProfileView.vue"),
         },
-      ]
+        {
+          path: "/tutorial",
+          name: "tutorial",
+          component: () => import("../views/Public/TutorialView.vue"),
+        },
+        {
+          path: "/about",
+          name: "about",
+          // route level code-splitting
+          // this generates a separate chunk (About.[hash].js) for this route
+          // which is lazy-loaded when the route is visited.
+          component: () => import("@/views/Public/AboutView.vue"),
+        },
+      ],
     },
     {
-      path: "/about",
-      name: "about",
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import("@/views/Public/AboutView.vue"),
+      path: "/login",
+      name: "login",
+      component: () => import("../views/Public/LoginView.vue"),
     },
     {
       path: "/admin",
