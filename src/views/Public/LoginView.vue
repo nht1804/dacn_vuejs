@@ -5,7 +5,7 @@
         <n-tab-pane name="signin" tab="Đăng nhập">
           <n-form>
             <n-form-item-row label="Tên đăng nhập">
-              <n-input placeholder="Tên đăng nhập" />
+              <n-input placeholder="Tên đăng nhập"/>
             </n-form-item-row>
             <n-form-item-row label="Mật khẩu">
               <n-input placeholder="Mật khẩu" />
@@ -34,6 +34,8 @@
       </n-tabs>
       <RouterLink :to="{ name: 'index' }">Quay lại trang chủ</RouterLink>
     </n-card>
+    
+              
   </div>
 </template>
 

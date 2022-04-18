@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import HomeView from "../views/HomeView.vue";
+import HomeView from "../views/Layout/HomeView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -27,7 +27,24 @@ const router = createRouter({
         {
           path: "/profile",
           name: "profile",
-          component: () => import("../views/Public/ProfileView.vue"),
+          component: () => import("../views/Layout/ProfileView.vue"),
+          children:[
+            {
+              path:"",
+              name:"userDetail",
+              component:()=>import("../views/Public/UserDetailView.vue")
+            },
+            {
+              path:"/history",
+              name:"history",
+              component:()=>import("../views/Public/HistoryView.vue")
+            },
+            {
+              path:"/carleasing",
+              name:"carleasing",
+              component:()=>import("../views/Public/CarLeasingView.vue")
+            },
+          ]
         },
         {
           path: "/tutorial",
@@ -52,7 +69,7 @@ const router = createRouter({
     {
       path: "/admin",
       name: "admin",
-      component: () => import("../views/AdminView.vue"),
+      component: () => import("../views/Layout/AdminView.vue"),
       children: [
         {
           path: "",

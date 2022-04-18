@@ -1,5 +1,5 @@
 <template>
-  profile
+  Car leasing
 </template>
 
 <script>

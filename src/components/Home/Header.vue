@@ -15,7 +15,7 @@
             <div class="header-right">
                 <RouterLink :to="{ name: 'dashboard' }">Admin</RouterLink>
                 <RouterLink :to="{ name: 'login' }">Đăng nhập</RouterLink>
-                <RouterLink :to="{ name: 'profile' }">Hello</RouterLink>
+                <RouterLink :to="{ name: 'userDetail' }">Hello</RouterLink>
             </div>
         </div>
     </div>
