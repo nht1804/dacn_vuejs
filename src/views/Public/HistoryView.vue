@@ -1,41 +1,85 @@
 <template>
-    <n-table :bordered="false" :single-line="false">
+    <h1>Lịch sử thuê xe</h1>
+    <table>
         <thead>
             <tr>
-                <th>Abandon</th>
-                <th>Abormal</th>
-                <th>Abolish</th>
-                <th>...</th>
-                <th>It's hard to learn words</th>
+                <th>Ngày thuê</th>
+                <th>Xe thuê</th>
+                <th>Hành động</th>
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>放弃</td>
-                <td>反常的</td>
-                <td>彻底废除</td>
-                <td>...</td>
-                <td>Damn it! I can't remember those words.</td>
-            </tr>
-            <tr>
-                <td>...</td>
-                <td>...</td>
-                <td>...</td>
-                <td>...</td>
-                <td>...</td>
+            <tr v-for="n in 10" :key="n">
+                <td>18/04/2000</td>
+                <td><RouterLink :to="{ name: 'index' }">Tên Xe</RouterLink></td>
+                <td>
+                    <n-button circle ghost color="#8a2be2" size="large">
+                        <n-icon>
+                            <enterLogo />
+                        </n-icon>
+                    </n-button>
+                </td>
             </tr>
         </tbody>
-    </n-table>
+    </table>
 </template>
 
 <script>
 import userNav from '@/components/Home/ProfileNav.vue'
+import {
+    Enter as enterLogo
+} from '@vicons/ionicons5'
 export default {
     components: {
-        userNav
+        userNav,
+        enterLogo
     }
 }
 </script>
 
-<style>
+<style scoped>
+h1 {
+    font-size: 30px;
+    padding: 10px;
+}
+a{
+    text-decoration: none;
+    color: cadetblue;
+}
+a:hover{
+    color:rgb(0, 126, 130);
+}
+table {
+    border-collapse: collapse;
+    height: 10px;
+    border: solid 1px;
+    border-color: rgb(124, 124, 124);
+}
+
+td,
+th {
+    border-bottom: 1px solid;
+    border-color: rgb(124, 124, 124);
+    width: 40%;
+}
+
+td,
+th {
+    padding: 10px;
+    font-size: 20px;
+}
+
+th {
+    background-color: black;
+    color: #f2f2f2;
+    text-align: left;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tr:hover {
+    background-color: #ddd;
+}
 </style>

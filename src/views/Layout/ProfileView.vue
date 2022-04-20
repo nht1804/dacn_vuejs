@@ -1,5 +1,5 @@
 <template>
-  <userNav/>
+  <userNav />
   <div class="container">
     <RouterView />
   </div>
@@ -18,8 +18,11 @@ export default {
 .container {
   width: 75%;
   margin-top: 50px;
-  justify-content: center;
   display: flex;
   float: right;
+  flex-direction: column;
+  align-items: flex-start;
+  align-content: center;
+  flex-wrap: wrap;
 }
 </style>

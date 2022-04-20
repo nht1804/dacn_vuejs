@@ -17,12 +17,16 @@ export default {
 <style scoped>
 .router-link-exact-active {
   color: #b7a8ff;
+  font-weight: bold;
 }
 
 a {
   text-decoration: none;
   color: black;
   font-size: 20px;
+}
+a:hover{
+  color:#8075b8;
 }
 
 
