@@ -57,8 +57,8 @@ export default {
       loginURL: "http://localhost:8080/api/Login",
       userURL: "http://localhost:8080/api/User",
       formLoginValue: ref({
-        userName: "",
-        password: ""
+        userName: "nht",
+        password: "0123456"
       }),
       formSignInValue: {
         userName: "",
@@ -110,6 +110,7 @@ export default {
       axios.post(this.loginURL, this.formLoginValue)
         .then(res => {
           document.cookie = `token=${res.data.data.token}`
+          this.$router.push({name:"index"})
         })
         .catch(err => {
           console.error(err);
