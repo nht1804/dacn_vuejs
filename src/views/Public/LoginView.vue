@@ -3,45 +3,121 @@
     <n-card>
       <n-tabs default-value="signin" size="large" justify-content="space-evenly">
         <n-tab-pane name="signin" tab="Đăng nhập">
-          <n-form>
-            <n-form-item-row label="Tên đăng nhập">
-              <n-input placeholder="Tên đăng nhập"/>
+          <n-form ref="formLoginRef" :model="formLoginValue" :rules="LoginRules">
+            <n-form-item-row label="Tên đăng nhập" path="userName">
+              <n-input v-model:value="formLoginValue.userName" placeholder="Tên đăng nhập" />
             </n-form-item-row>
-            <n-form-item-row label="Mật khẩu">
-              <n-input placeholder="Mật khẩu" />
+            <n-form-item-row label="Mật khẩu" path="password">
+              <n-input type="password" show-password-on="click" v-model:value="formLoginValue.password"
+                placeholder="Mật khẩu" />
             </n-form-item-row>
           </n-form>
-          <n-button type="primary" block secondary strong>
+          <n-button :disabled="formLoginValue.userName === '' || formLoginValue.password === ''" @click="login"
+            type="primary" block secondary strong>
             Đăng nhập
           </n-button>
         </n-tab-pane>
         <n-tab-pane name="signup" tab="Đăng ký">
-          <n-form>
-            <n-form-item-row label="Tên đăng nhập">
-              <n-input placeholder="Tên đăng nhập" />
+          <n-form ref="formSignInRef" :model="formSignInValue" :rules="signInRules">
+            <n-form-item-row label="Tên đăng nhập" path="userName">
+              <n-input v-model:value="formSignInValue.userName" placeholder="Tên đăng nhập" />
             </n-form-item-row>
-            <n-form-item-row label="Mật khẩu">
-              <n-input placeholder="Mật khẩu" />
+            <n-form-item-row label="Mật khẩu" path="password">
+              <n-input v-model:value="formSignInValue.password" type="password" show-password-on="click"
+                placeholder="Mật khẩu" />
             </n-form-item-row>
-            <n-form-item-row label="Nhập lại mật khẩu">
-              <n-input placeholder="Nhập lại mật khẩu" />
+            <n-form-item-row ref="rePasswordRef" label="Nhập lại mật khẩu" path="repassword">
+              <n-input v-model:value="formSignInValue.repassword" type="password" show-password-on="click"
+                placeholder="Nhập lại mật khẩu" />
             </n-form-item-row>
           </n-form>
-          <n-button type="primary" block secondary strong>
+          <n-button
+            :disabled="formSignInValue.userName === '' || formSignInValue.password === '' || formSignInValue.repassword === '' || !checkRepassword()"
+            @click="signIn" type="primary" block secondary strong>
             Đăng ký
           </n-button>
         </n-tab-pane>
       </n-tabs>
       <RouterLink :to="{ name: 'index' }">Quay lại trang chủ</RouterLink>
     </n-card>
-    
-              
+
+
   </div>
 </template>
 
 <script>
+import { ref } from "vue";
+import axios from 'axios'
 export default {
-
+  data() {
+    return {
+      formLoginRef: ref(null),
+      rePasswordRef: ref(null),
+      formSignInRef: ref(null),
+      loginURL: "http://localhost:8080/api/Login",
+      formLoginValue: ref({
+        userName: "",
+        password: ""
+      }),
+      formSignInValue: {
+        userName: "",
+        password: "",
+        repassword: ""
+      },
+      LoginRules: {
+        userName: {
+          required: true,
+          message: "Bạn chưa nhập tên đăng nhập",
+          trigger: "blur"
+        },
+        password: {
+          required: true,
+          message: "Bạn chưa nhập mật khẩu",
+          trigger: "blur"
+        }
+      },
+      signInRules: {
+        userName: {
+          required: true,
+          message: "Bạn chưa nhập tên đăng nhập",
+          trigger: "blur"
+        },
+        password: {
+          required: true,
+          message: "Bạn chưa nhập mật khẩu",
+          trigger: "blur"
+        },
+        repassword: [{
+          required: true,
+          message: "Chưa nhập lại mật khẩu",
+          trigger: "blur"
+        },
+        {
+          validator: this.checkRepassword,
+          message: "Nhập lại mật khẩu không đúng",
+          trigger: ["blur", "input"]
+        }
+        ]
+      }
+    }
+  },
+  methods: {
+    checkRepassword() {
+      return this.formSignInValue.password === this.formSignInValue.repassword;
+    },
+    async login() {
+      axios.post(this.loginURL, this.formLoginValue)
+        .then(res => {
+          document.cookie = `token=${res.data.data.token}`
+        })
+        .catch(err => {
+          console.error(err);
+        })
+    },
+    async signIn() {
+      
+    }
+  }
 }
 </script>
 
@@ -51,9 +127,11 @@ a {
   color: black;
   font-size: 15px;
 }
-a:hover{
+
+a:hover {
   color: rgb(66, 53, 53);
 }
+
 .container {
   background-image: url(../../assets/bg_login.jpg);
   background-repeat: no-repeat;

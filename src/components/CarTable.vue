@@ -4,9 +4,9 @@
             <tr>
                 <th colspan="7">
                     <n-space justify="end">
-                        <n-button
-                            @click="showModal.status = true, showModal.modal = {}, showModal.addCar = true"
-                        >Add a car</n-button>
+                        <n-button @click="modal(), showModal.status = true, showModal.addCar = true">Add
+                            a
+                            car</n-button>
                     </n-space>
                 </th>
             </tr>
@@ -14,27 +14,48 @@
         <thead>
             <tr>
                 <th>Name</th>
-                <th>Type</th>
-                <th>Image</th>
-                <th>Manufacturer</th>
-                <th>Status</th>
                 <th>Price</th>
+                <th>Image</th>
+                <th>Seat</th>
+                <th>Transmission</th>
+                <th>Manufacturer</th>
+                <th>About</th>
+                <th>Driver</th>
+                <th>Status</th>
                 <th>Action</th>
             </tr>
         </thead>
         <tbody v-if="car">
             <tr v-for="item in car" :key="item.id">
                 <td>{{ item.name }}</td>
-                <td>{{ item.carType }}</td>
+                <td>{{ item.price }}</td>
                 <td>
-                    <n-ellipsis style="max-width: 240px">{{ item.image }}</n-ellipsis>
+                    <n-scrollbar style="max-height: 100px">
+                        <p v-for="(img, index) in item.image" :key="index">
+                            <a :href="img">
+                                Link {{ index + 1 }}
+                            </a>
+                        </p>
+                    </n-scrollbar>
                 </td>
-                <td>{{ item.manufacturer }}</td>
+                <td>
+                    {{ item.detail.seat }}
+                </td>
+                <td>
+                    {{ item.detail.transmission }}
+                </td>
+                <td>
+                    {{ item.detail.manufacturer }}
+                </td>
+                <td>{{ item.detail.about }}</td>
+                <td>
+                    <n-tag v-if="item.detail.hasDriver" type="success">Yes</n-tag>
+                    <n-tag v-else type="error">No</n-tag>
+                </td>
                 <td>
                     <n-tag v-if="item.status == true" type="success">TRUE</n-tag>
                     <n-tag v-else type="error">FALSE</n-tag>
                 </td>
-                <td>{{ item.price }}</td>
                 <td>
                     <n-button strong secondary circle type="info" @click="editCar(item.id)">
                         <template #icon>
@@ -84,27 +105,49 @@
                 </n-gi>
                 <n-gi>
                     Manufacturer
-                    <n-input
-                        clearable
-                        placeholder="Manufacturer"
-                        v-model:value="showModal.modal.manufacturer"
-                    />
+                    <n-input clearable placeholder="Manufacturer" v-model:value="showModal.modal.detail.manufacturer" />
                 </n-gi>
                 <n-gi>
-                    Type
-                    <n-input clearable placeholder="Type" v-model:value="showModal.modal.carType" />
+                    Seat
+                    <n-input-number clearable placeholder="Type" v-model:value="showModal.modal.detail.seat" />
                 </n-gi>
                 <n-gi>
                     Status
                     <n-select v-model:value="showModal.modal.status" :options="statusOption" />
                 </n-gi>
-                <n-gi span="2">
-                    Image
-                    <n-input clearable placeholder="Image" v-model:value="showModal.modal.image" />
-                </n-gi>
                 <n-gi>
                     Price
-                    <n-input clearable placeholder="Price" v-model:value="showModal.modal.price" />
+                    <n-input-number clearable placeholder="Price" v-model:value="showModal.modal.price" />
+                </n-gi>
+                <n-gi>
+                    Transmission
+                    <n-input clearable placeholder="Transmission" v-model:value="showModal.modal.detail.transmission" />
+                </n-gi>
+                <n-gi span="2">
+                    About
+                    <n-input v-model:value="showModal.modal.detail.about" type="textarea" placeholder="About" />
+                </n-gi>
+                <n-gi>
+                    Driver
+                    <n-select v-model:value="showModal.modal.detail.hasDriver" :options="hasDriverOption" />
+                </n-gi>
+                <n-gi span="3">
+                    Image
+                    <div class="input" v-for="(img, index) in showModal.modal.image" :key="index">
+                        <n-input clearable placeholder="Image" v-model:value="showModal.modal.image[index]" />
+                        <n-button :disabled="removeImg" @click="actionImgLink(false)" style="margin-left:10px;" strong
+                            secondary circle type="primary">
+                            <n-icon>
+                                <removeIcon />
+                            </n-icon>
+                        </n-button>
+                        <n-button :disabled="addImg" @click="actionImgLink(true)" style="margin-left:10px;" strong
+                            secondary circle type="primary">
+                            <n-icon>
+                                <MoreIcon />
+                            </n-icon>
+                        </n-button>
+                    </div>
                 </n-gi>
             </n-grid>
             <template #footer>
@@ -124,8 +167,11 @@ import {
     Trash as TrashIcon,
     Save as SaveIcon,
     Close as CloseIcon,
-    AddCircle as AddIcon
+    AddCircle as AddIcon,
+    Add as MoreIcon,
+    Remove as removeIcon
 } from '@vicons/ionicons5'
+import { NInput } from 'naive-ui'
 import axios from 'axios'
 
 export default {
@@ -136,20 +182,31 @@ export default {
             showModal: {
                 addCar: false,
                 status: false,
-                modal: [],
+                modal: {}
             },
             statusOption: [{
                 label: "true",
-                value: "true"
+                value: true
             },
             {
                 label: "false",
-                value: "false"
-            }]
+                value: false
+            }],
+            hasDriverOption: [{
+                label: "Yes",
+                value: true
+            },
+            {
+                label: "No",
+                value: false
+            }],
+            addImg: false,
+            removeImg: false,
         }
     },
     mounted() {
         this.getCar();
+        this.modal();
     },
     methods: {
         async getCar() {
@@ -162,13 +219,17 @@ export default {
                 })
         },
         async editCar(id) {
-            this.showModal.addCar = false;
+            this.showModal.addCar = false
             this.showModal.modal = {}
             axios.get(this.carUrl + "/id/" + id)
                 .then(res => {
                     this.showModal.modal = res.data.data
                     this.showModal.status = true;
-                    this.getCar();
+                    if (res.data.data.image.length === 1) {
+                        this.removeImg = true;
+                    } else if (res.data.data.image.length === 5) {
+                        this.addImg = true;
+                    }
                 })
                 .catch(err => {
                     console.error(err);
@@ -207,6 +268,50 @@ export default {
                 .catch(err => {
                     console.error(err);
                 })
+        },
+        actionImgLink(add) {
+            let c = this.showModal.modal.image.length;
+            if (add) {
+                if (c === 5) {
+                    this.addImg = true;
+                }
+                else {
+                    if ((c + 1) === 5) {
+                        this.addImg = true;
+                    }
+                    this.showModal.modal.image.push("");
+                    this.removeImg = false;
+                }
+            } else {
+                if (c === 1) {
+                    this.removeImg = true;
+                }
+                else {
+                    if ((c - 1) === 1) {
+                        this.removeImg = true
+                    }
+                    this.showModal.modal.image.splice(-1)
+                    this.addImg = false
+                }
+            }
+        },
+        modal() {
+            this.showModal.modal = {
+                name: "",
+                price: "",
+                detail: {
+                    seat: 0,
+                    transmission: "",
+                    manufacturer: "",
+                    about: "",
+                    hasDriver: false
+                },
+                image: [
+                    "",
+                ],
+                status: true,
+                count: 0
+            }
         }
     },
     components: {
@@ -214,11 +319,36 @@ export default {
         TrashIcon,
         SaveIcon,
         CloseIcon,
-        AddIcon
+        AddIcon,
+        MoreIcon,
+        NInput,
+        removeIcon
 
     },
 }
 </script>
 
-<style>
+<style scoped>
+a {
+    text-decoration: none;
+    color: blueviolet;
+}
+
+a:hover {
+    color: black;
+}
+
+.input {
+    display: flex;
+    flex-wrap: nowrap;
+    width: 90%;
+    justify-content: flex-start;
+    margin-top: 10px;
+}
+
+.add-a-image {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+}
 </style>
