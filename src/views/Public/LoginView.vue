@@ -47,7 +47,7 @@
 
 <script>
 import { ref } from "vue";
-import axios from 'axios'
+import axios from 'axios';
 export default {
   data() {
     return {
@@ -55,6 +55,7 @@ export default {
       rePasswordRef: ref(null),
       formSignInRef: ref(null),
       loginURL: "http://localhost:8080/api/Login",
+      userURL: "http://localhost:8080/api/User",
       formLoginValue: ref({
         userName: "",
         password: ""
@@ -115,7 +116,13 @@ export default {
         })
     },
     async signIn() {
-      
+      axios.post(this.userURL, this.formSignInValue)
+        .then(res => {
+          this.$router.go();
+        })
+        .catch(err => {
+          console.error(err);
+        })
     }
   }
 }
