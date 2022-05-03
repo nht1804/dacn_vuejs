@@ -1,16 +1,22 @@
 <template>
-    <div class="user-nav-opt">
-        <div class="router">
-            <RouterLink :to="{ name: 'userDetail' }">Thông tin</RouterLink>
-            <RouterLink :to="{ name: 'history' }">Lịch sử thuê xe</RouterLink>
-            <RouterLink :to="{ name: 'carleasing' }">Xe đang thuê</RouterLink>
-        </div>
+  <div class="user-nav-opt">
+    <div class="router">
+      <RouterLink :to="{ name: 'userDetail' }">Thông tin</RouterLink>
+      <RouterLink :to="{ name: 'userDetail' }">Đổi mật khẩu</RouterLink>
+      <RouterLink :to="{ name: 'history' }">Lịch sử thuê xe</RouterLink>
+      <RouterLink :to="{ name: 'carleasing' }">Xe đang thuê</RouterLink>
+      <RouterLink :to="{ name: 'login' }" @click="logout">Đăng xuất</RouterLink>
     </div>
+  </div>
 </template>
 
 <script>
 export default {
-
+  methods: {
+    logout(){
+      document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    }
+  }
 }
 </script>
 
@@ -25,8 +31,9 @@ a {
   color: black;
   font-size: 20px;
 }
-a:hover{
-  color:#8075b8;
+
+a:hover {
+  color: #8075b8;
 }
 
 

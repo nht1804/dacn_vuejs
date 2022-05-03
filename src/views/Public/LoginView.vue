@@ -5,10 +5,10 @@
         <n-tab-pane name="signin" tab="Đăng nhập">
           <n-form ref="formLoginRef" :model="formLoginValue" :rules="LoginRules">
             <n-form-item-row label="Tên đăng nhập" path="userName">
-              <n-input v-model:value="formLoginValue.userName" placeholder="Tên đăng nhập" />
+              <n-input v-model:value="formLoginValue.userName" maxlength="12" placeholder="Tên đăng nhập" />
             </n-form-item-row>
             <n-form-item-row label="Mật khẩu" path="password">
-              <n-input type="password" show-password-on="click" v-model:value="formLoginValue.password"
+              <n-input type="password" maxlength="12" show-password-on="click" v-model:value="formLoginValue.password"
                 placeholder="Mật khẩu" />
             </n-form-item-row>
           </n-form>
@@ -20,14 +20,14 @@
         <n-tab-pane name="signup" tab="Đăng ký">
           <n-form ref="formSignInRef" :model="formSignInValue" :rules="signInRules">
             <n-form-item-row label="Tên đăng nhập" path="userName">
-              <n-input v-model:value="formSignInValue.userName" placeholder="Tên đăng nhập" />
+              <n-input v-model:value="formSignInValue.userName" maxlength="12" placeholder="Tên đăng nhập" />
             </n-form-item-row>
             <n-form-item-row label="Mật khẩu" path="password">
-              <n-input v-model:value="formSignInValue.password" type="password" show-password-on="click"
+              <n-input v-model:value="formSignInValue.password" maxlength="12" type="password" show-password-on="click"
                 placeholder="Mật khẩu" />
             </n-form-item-row>
             <n-form-item-row ref="rePasswordRef" label="Nhập lại mật khẩu" path="repassword">
-              <n-input v-model:value="formSignInValue.repassword" type="password" show-password-on="click"
+              <n-input v-model:value="formSignInValue.repassword" maxlength="12" type="password" show-password-on="click"
                 placeholder="Nhập lại mật khẩu" />
             </n-form-item-row>
           </n-form>
@@ -110,7 +110,7 @@ export default {
       axios.post(this.loginURL, this.formLoginValue)
         .then(res => {
           document.cookie = `token=${res.data.data.token}`
-          this.$router.push({name:"index"})
+          this.$router.push({ name: "index", replace: true })
         })
         .catch(err => {
           console.error(err);

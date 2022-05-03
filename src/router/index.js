@@ -6,6 +6,11 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
+      path: "/404",
+      name: "404",
+      component: () => import("../views/404.vue"),
+    },
+    {
       path: "/",
       name: "home",
       component: HomeView,
@@ -69,6 +74,19 @@ const router = createRouter({
       path: "/login",
       name: "login",
       component: () => import("../views/Public/LoginView.vue"),
+      beforeEnter: async (to, from) => {
+        let data = await axios
+          .get(`http://localhost:8080/api/Login/Check/${cookie().token}`)
+          .then((res) => {
+            return res.data;
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+        if (data.status === "SUCCESS") {
+          return { name: "userDetail" };
+        }
+      },
     },
     {
       path: "/admin",
@@ -107,37 +125,36 @@ const router = createRouter({
     },
   ],
 });
-router.beforeEach((to, from) => {
-  if (to.meta.reqAuth && checkLog() === false) {
-    return { name: "login" };
-  }
-  if (to.meta.reqAuth && to.meta.reqRole) {
-    return { name: "login" };
-  }
-});
-function checkLog() {
-  var cookie = Object.fromEntries(
+function cookie() {
+  return Object.fromEntries(
     document.cookie
       .split("; ")
       .map((v) => v.split(/=(.*)/s).map(decodeURIComponent))
   );
-  let url = "http://localhost:8080/api/Login/Check/";
-  if (typeof cookie.token !== "undefined") {
-    axios
-      .get(url + cookie.token)
-      .then((res) => {
-        if (res.data.status === "SUCCESS") {
-          return true;
-        } else {
-          return false;
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-        return false;
-      });
-  } else {
-    return false;
-  }
 }
+function verifyToken(){
+  return axios
+  .get(`http://localhost:8080/api/Login/Check/${cookie().token}`)
+  .then((res) => {
+    return res.data;
+  })
+  .catch((err) => {
+    console.error(err);
+  });
+}
+router.beforeResolve(async (to, from) => {
+  let data = await verifyToken();
+  if (to.meta.reqAuth) {
+    if (data.status !== "SUCCESS") {
+      return { name: "login" };
+    }
+  }
+  if (to.meta.reqAuth && to.meta.reqRole) {
+    if (data.status !== "SUCCESS") {
+      return { name: "login" };
+    } else if (data.data.role.roleLevel > 1) {
+      return { name: "404" };
+    }
+  }
+});
 export default router;

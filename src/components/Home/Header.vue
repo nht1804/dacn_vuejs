@@ -13,9 +13,9 @@
             <RouterLink :to="{ name: 'tutorial' }">Hướng dẫn</RouterLink>
             <RouterLink :to="{ name: 'about' }">Giới thiệu</RouterLink>
             <div class="header-right">
-                <RouterLink :to="{ name: 'dashboard' }">Admin</RouterLink>
-                <RouterLink :to="{ name: 'login' }">Đăng nhập</RouterLink>
-                <RouterLink :to="{ name: 'userDetail' }">Hello</RouterLink>
+                <RouterLink v-if="roleLevel <= 1 && roleLevel !== ''" :to="{ name: 'dashboard' }">Admin</RouterLink>
+                <RouterLink v-if="userName === ''" :to="{ name: 'login' }">Đăng nhập</RouterLink>
+                <RouterLink v-if="userName !== ''" :to="{ name: 'userDetail' }">Hello {{ userName }}</RouterLink>
             </div>
         </div>
     </div>
@@ -23,9 +23,38 @@
 
 <script>
 import { LogoDesignernews as logo } from '@vicons/ionicons5'
+import axios from 'axios';
 export default {
     data() {
         return {
+            userName: "",
+            roleLevel: "",
+            checkLoginURL: "http://localhost:8080/api/Login/Check/"
+        }
+    },
+    mounted() {
+        this.checkLog()
+    },
+    methods: {
+        async checkLog() {
+            let token = this.cookie().token
+            axios.get(this.checkLoginURL + token)
+                .then(res => {
+                    if (res.data.status === "SUCCESS") {
+                        this.userName = res.data.data.userName
+                        this.roleLevel = res.data.data.role.roleLevel
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                })
+        },
+        cookie() {
+            return Object.fromEntries(
+                document.cookie
+                    .split("; ")
+                    .map((v) => v.split(/=(.*)/s).map(decodeURIComponent))
+            );
         }
     },
     components: {
