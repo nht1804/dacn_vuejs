@@ -4,9 +4,7 @@
             <tr>
                 <th colspan="5">
                     <n-space justify="end">
-                        <n-button
-                            @click="showModal.addUser = true, showModal.modal = {}"
-                        >Create User</n-button>
+                        <n-button @click="showModal.addUser = true, showModal.modal = {}">Create User</n-button>
                     </n-space>
                 </th>
             </tr>
@@ -43,18 +41,18 @@
                         {{ item.information.number }}
                         <br />
                         <b>Address:</b>
-                         <n-ellipsis style="max-width: 240px">{{ item.information.address }}</n-ellipsis>
+                        <n-ellipsis style="max-width: 240px">{{ item.information.address }}</n-ellipsis>
                     </n-thing>
                 </td>
                 <td>
-                    <n-button strong secondary circle type="info" @click="editUser(item.id)">
+                    <n-button strong secondary circle type="info" @click="editUser(item.id, item.password)">
                         <template #icon>
                             <n-icon>
                                 <BuildIcon />
                             </n-icon>
                         </template>
                     </n-button>
-                    <n-button strong secondary circle type="info" @click="deleteUser(item.id)">
+                    <n-button strong secondary circle type="info" @click="deleteUser(item.id, item.userName)">
                         <template #icon>
                             <n-icon>
                                 <TrashIcon />
@@ -95,32 +93,20 @@
                             UserName
                             <n-popover trigger="hover">
                                 <template #trigger>
-                                    <n-input
-                                        disabled
-                                        placeholder="UserName"
-                                        v-model:value="showModal.modal.userName"
-                                    />
+                                    <n-input disabled placeholder="UserName" v-model:value="showModal.modal.userName" />
                                 </template>
                                 <span>You can't edit this</span>
                             </n-popover>
                         </n-gi>
                         <n-gi>
                             Password
-                            <n-input
-                                maxlength="12"
-                                show-count
-                                clearable
-                                placeholder="Password"
-                                v-model:value="showModal.modal.password"
-                            />
+                            <n-input maxlength="12" show-count clearable placeholder="Password"
+                                v-model:value="showModal.modal.password" />
                         </n-gi>
                         <n-gi>
                             ROLE
-                            <n-select
-                                @update:value="handleUpdateRoleValue"
-                                :value="showModal.modal.role.roleName"
-                                :options="roleOption"
-                            />
+                            <n-select @update:value="handleUpdateRoleValue" :value="showModal.modal.role.roleName"
+                                :options="roleOption" />
                         </n-gi>
                     </n-grid>
                 </n-collapse-item>
@@ -128,61 +114,35 @@
                     <n-grid x-gap="12" :cols="3">
                         <n-gi>
                             First Name
-                            <n-input
-                                maxlength="12"
-                                show-count
-                                clearable
-                                placeholder="First Name"
-                                v-model:value="showModal.modal.information.firstName"
-                            />
+                            <n-input maxlength="12" show-count clearable placeholder="First Name"
+                                v-model:value="showModal.modal.information.firstName" />
                         </n-gi>
                         <n-gi>
                             Last Name
-                            <n-input
-                                maxlength="12"
-                                show-count
-                                clearable
-                                placeholder="Last Name"
-                                v-model:value="showModal.modal.information.lastName"
-                            />
+                            <n-input maxlength="12" show-count clearable placeholder="Last Name"
+                                v-model:value="showModal.modal.information.lastName" />
                         </n-gi>
                         <n-gi>
                             Gender
-                            <n-select
-                                v-model:value="showModal.modal.information.gender"
-                                :options="gender"
-                            />
+                            <n-select v-model:value="showModal.modal.information.gender" :options="gender" />
                         </n-gi>
                     </n-grid>
                     <br />
                     <n-grid x-gap="12" :cols="2">
                         <n-gi>
                             Date of birth
-                            <n-date-picker
-                                type="date"
-                                clearable
-                                v-model:value="showModal.modal.information.dateOfBirth"
-                            />
+                            <n-date-picker type="date" clearable value-format="yyyy-MM-dd"
+                                v-model:formatted-value="showModal.modal.information.dateOfBirth" />
                         </n-gi>
                         <n-gi>
                             Phone number
-                            <n-input
-                                maxlength="12"
-                                show-count
-                                clearable
-                                placeholder="Number"
-                                v-model:value="showModal.modal.information.number"
-                            />
+                            <n-input maxlength="12" show-count clearable placeholder="Number"
+                                v-model:value="showModal.modal.information.number" />
                         </n-gi>
                     </n-grid>
                     <br />Address
-                    <n-input
-                        type="textarea"
-                        clearable
-                        placeholder="Address"
-                        maxlength="100"
-                        v-model:value="showModal.modal.information.address"
-                    />
+                    <n-input type="textarea" clearable placeholder="Address" maxlength="100"
+                        v-model:value="showModal.modal.information.address" />
                 </n-collapse-item>
             </n-collapse>
             <template #footer>
@@ -207,17 +167,12 @@
             <n-grid x-gap="12" :cols="2">
                 <n-gi>
                     UserName
-                    <n-input placeholder="UserName" v-model:value="showModal.modal.userName" />
+                    <n-input maxlength="12" show-count placeholder="UserName" v-model:value="showModal.modal.userName" />
                 </n-gi>
                 <n-gi>
                     Password
-                    <n-input
-                        maxlength="12"
-                        show-count
-                        clearable
-                        placeholder="Password"
-                        v-model:value="showModal.modal.password"
-                    />
+                    <n-input maxlength="12" show-count clearable placeholder="Password"
+                        v-model:value="showModal.modal.password" />
                 </n-gi>
             </n-grid>
             <template #footer>
@@ -238,6 +193,7 @@ import {
     Close as CloseIcon,
     AddCircle as AddIcon
 } from '@vicons/ionicons5'
+import { useMessage, useDialog } from "naive-ui";
 import axios from 'axios'
 
 export default {
@@ -245,6 +201,8 @@ export default {
         return {
             userUrl: 'http://localhost:8080/api/User',
             roleUrl: 'http://localhost:8080/api/Role',
+            message: useMessage(),
+            dialog: useDialog(),
             user: null,
             role: [],
             roleOption: [],
@@ -272,17 +230,12 @@ export default {
         this.getRoleData()
     },
     methods: {
-        timeStamp(value) {
-            return new Date(value.slice(0, 10)).getTime()
-        },
-        async editUser(id) {
+        async editUser(id, password) {
             this.showModal.modal = {};
             axios.get(this.userUrl + "/id/" + id)
                 .then(res => {
-                    let d = res.data.data
-                    this.showModal.modal = d
-                    //yyy-mm-dd to timeStamp
-                    this.showModal.modal.information.dateOfBirth = this.timeStamp(d.information.dateOfBirth)
+                    this.showModal.modal = res.data.data
+                    this.showModal.modal.password = password;
                     this.showModal.status = true
                 })
                 .catch(err => {
@@ -312,41 +265,58 @@ export default {
         }
         ,
         async save() {
-            this.user.forEach(e => {
-                if (e.id === this.showModal.modal.id) {
-                    e = JSON.parse(JSON.stringify(this.showModal.modal))
-                    e.information.dateOfBirth = JSON.parse(JSON.stringify(new Date(e.information.dateOfBirth).toLocaleDateString("sv-SE")))
-                    axios.put(this.userUrl, e)
-                        .then(res => {
-                            this.getUserData()
-                            this.showModal.status = false
-                        })
-                        .catch(err => {
-                            console.error(err);
-                        })
-                    return
-                }
-            });
-        },
-        async deleteUser(userID) {
-            axios.delete(this.userUrl, {
-                data: {
-                    id: userID
-                }
-            })
+            axios.put(this.userUrl, this.showModal.modal)
                 .then(res => {
-                    this.getUserData()
+                    let status = res.data.status
+                    if (status === "SUCCESS") {
+                        this.message.success(res.data.message)
+                        this.getUserData();
+                        this.showModal.status = false;
+                    } else {
+                        this.message.error(res.data.message)
+                    }
                 })
                 .catch(err => {
                     console.error(err);
                 })
         },
+        async deleteUser(userID, userName) {
+            this.dialog.warning({
+                title: "Confirm",
+                content: "Are you sure?",
+                positiveText: "Sure",
+                negativeText: "Not Sure",
+                onPositiveClick: () => {
+                    axios.delete(this.userUrl, {
+                        data: { id: userID }
+                    }).then(res => {
+                        let status = res.data.status
+                        if (status === "SUCCESS") {
+                            this.message.success(`Deleted user ${userName}`);
+                            this.getUserData()
+                        } else {
+                            this.message.error(res.data.message)
+                        }
+                    })
+                        .catch(err => { message.error(err); })
+                },
+                onNegativeClick: () => {
+                    this.message.error("Not Sure");
+                }
+            });
+        },
         async addUser() {
             axios.post(this.userUrl, this.showModal.modal)
                 .then(res => {
-                    this.showModal.addUser = false
-                    this.getUserData()
-                    console.log(res)
+                    let status = res.data.status
+                    if (status === "SUCCESS") {
+                        this.message.success(`added user ${this.showModal.modal.userName} to database`);
+                        this.showModal.addUser = false
+                        this.getUserData()
+                    }
+                    else {
+                        this.message.error(res.data.message);
+                    }
                 })
                 .catch(err => {
                     console.error(err);

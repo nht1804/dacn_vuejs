@@ -3,7 +3,7 @@
     <n-grid x-gap="24" y-gap="12" cols="2">
       <n-gi>
         <div class="car_name">
-          Tên Xe
+          Tên Xe {{ $route.params.id }}
         </div>
         <table>
           <tbody>
@@ -16,7 +16,7 @@
             </tr>
             <tr>
               <th>Mô tả</th>
-              <td> mô tả áhkjdhajdhjkahsjdhaks</td>
+              <td> mô tả</td>
             </tr>
             <tr>
               <th>Tài xế</th>
@@ -89,6 +89,7 @@ export default {
 .car_name {
   font-size: 50px;
   font-weight: bold;
+  word-wrap: break-word;
 }
 
 h1 {
@@ -107,7 +108,9 @@ h1 {
   border-radius: 5px;
   margin: auto;
 }
-
+td{
+  word-wrap: break-word;
+}
 .lease-btn:hover {
   background-color: #008741;
 }

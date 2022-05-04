@@ -27,8 +27,8 @@
                 placeholder="Mật khẩu" />
             </n-form-item-row>
             <n-form-item-row ref="rePasswordRef" label="Nhập lại mật khẩu" path="repassword">
-              <n-input v-model:value="formSignInValue.repassword" maxlength="12" type="password" show-password-on="click"
-                placeholder="Nhập lại mật khẩu" />
+              <n-input v-model:value="formSignInValue.repassword" maxlength="12" type="password"
+                show-password-on="click" placeholder="Nhập lại mật khẩu" />
             </n-form-item-row>
           </n-form>
           <n-button
@@ -40,14 +40,13 @@
       </n-tabs>
       <RouterLink :to="{ name: 'index' }">Quay lại trang chủ</RouterLink>
     </n-card>
-
-
   </div>
 </template>
 
 <script>
 import { ref } from "vue";
 import axios from 'axios';
+import { useMessage } from "naive-ui";
 export default {
   data() {
     return {
@@ -58,7 +57,7 @@ export default {
       userURL: "http://localhost:8080/api/User",
       formLoginValue: ref({
         userName: "nht",
-        password: "0123456"
+        password: "123"
       }),
       formSignInValue: {
         userName: "",
@@ -99,7 +98,8 @@ export default {
           trigger: ["blur", "input"]
         }
         ]
-      }
+      },
+      message: useMessage()
     }
   },
   methods: {
@@ -109,8 +109,16 @@ export default {
     async login() {
       axios.post(this.loginURL, this.formLoginValue)
         .then(res => {
-          document.cookie = `token=${res.data.data.token}`
-          this.$router.push({ name: "index", replace: true })
+          let status = res.data.status
+          if (status === "SUCCESS") {
+            this.message.success(res.data.message);
+            document.cookie = `token=${res.data.data.token}`
+            this.$router.push({ name: "index" })
+          }
+          else {
+            this.message.error(res.data.message);
+            console.log(res.data.message)
+          }
         })
         .catch(err => {
           console.error(err);
@@ -119,7 +127,13 @@ export default {
     async signIn() {
       axios.post(this.userURL, this.formSignInValue)
         .then(res => {
-          this.$router.go();
+          let status = res.data.status
+          if (status === "SUCCESS") {
+            this.message.success(res.data.message);
+            this.$router.go();
+          }else{
+            this.message.error(res.data.message);
+          }
         })
         .catch(err => {
           console.error(err);

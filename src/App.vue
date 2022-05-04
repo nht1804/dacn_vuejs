@@ -9,7 +9,11 @@ export default defineComponent({
 </script>
 
 <template>
-  <RouterView />
+  <n-dialog-provider>
+    <n-message-provider>
+      <RouterView />
+    </n-message-provider>
+  </n-dialog-provider>
 </template>
 <style>
 * {

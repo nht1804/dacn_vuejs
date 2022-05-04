@@ -52,14 +52,12 @@
     <div class="car-list">
       <n-scrollbar style="height: 100vh">
         <n-grid x-gap="24" y-gap="24" cols="2">
-          <n-gi v-for="n in 50" :key="n">
-            <n-card title="Car Title">
+          <n-gi v-for="item in car" :key="item.id">
+            <n-card @click="carDetail(item.id)" :title="item.name">
               <template #cover>
-                <img
-                  src="https://ict-imgs.vgcloud.vn/2021/12/09/12/hinh-dung-ve-mau-apple-car-dua-tren-bang-sang-che-goc-1.jpg"
-                  class="proc-img">
+                <img :src="item.image" class="proc-img">
               </template>
-              <p>500$</p>
+              <p>{{ item.price }}$/Giờ</p>
             </n-card>
           </n-gi>
         </n-grid>
@@ -69,7 +67,33 @@
 </template>
 
 <script>
+import axios from 'axios'
+import { useMessage } from 'naive-ui'
 export default {
+  data() {
+    return {
+      car: {},
+      carURL: 'http://localhost:8080/api/Car',
+      message: useMessage(),
+    }
+  },
+  mounted() {
+    this.getCar()
+  },
+  methods: {
+    async getCar() {
+      axios.get(this.carURL)
+        .then(res => {
+          this.car = res.data.data;
+        })
+        .catch(err => {
+          this.message.error(err);
+        })
+    },
+    carDetail(itemId) {
+      this.$router.push({ name: 'carDetail', params: { id: itemId } })
+    }
+  }
 }
 </script>
 
@@ -80,6 +104,7 @@ export default {
   justify-content: center;
   flex-wrap: wrap;
 }
+
 .n-card {
   cursor: pointer;
 }
@@ -87,6 +112,7 @@ export default {
 .n-card:hover {
   filter: brightness(95%);
 }
+
 .n-checkbox {
   font-size: 20px;
   margin: 10px;

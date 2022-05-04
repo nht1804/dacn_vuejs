@@ -6,7 +6,7 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: "/404",
+      path: "/:pathMatch(.*)*",
       name: "404",
       component: () => import("../views/404.vue"),
     },
@@ -29,6 +29,19 @@ const router = createRouter({
           path: "/car/:id",
           name: "carDetail",
           component: () => import("../views/Public/CarDetailView.vue"),
+          beforeEnter: async (to, from) => {
+            let status = await axios
+              .get(`http://localhost:8080/api/Car/id/${to.params.id}`)
+              .then((res) => {
+                return res.data.status;
+              })
+              .catch((err) => {
+                console.error(err);
+              });
+            if (status !== "SUCCESS") {
+              return { name: "404" };
+            }
+          },
         },
         {
           path: "/profile",
@@ -132,15 +145,15 @@ function cookie() {
       .map((v) => v.split(/=(.*)/s).map(decodeURIComponent))
   );
 }
-function verifyToken(){
+function verifyToken() {
   return axios
-  .get(`http://localhost:8080/api/Login/Check/${cookie().token}`)
-  .then((res) => {
-    return res.data;
-  })
-  .catch((err) => {
-    console.error(err);
-  });
+    .get(`http://localhost:8080/api/Login/Check/${cookie().token}`)
+    .then((res) => {
+      return res.data;
+    })
+    .catch((err) => {
+      console.error(err);
+    });
 }
 router.beforeResolve(async (to, from) => {
   let data = await verifyToken();

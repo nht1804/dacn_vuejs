@@ -11,9 +11,16 @@
 </template>
 
 <script>
+import { useMessage } from "naive-ui";
 export default {
+  data() {
+    return {
+      message: useMessage()
+    }
+  },
   methods: {
-    logout(){
+    logout() {
+      this.message.info("Logout")
       document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     }
   }
