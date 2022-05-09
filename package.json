@@ -11,7 +11,8 @@
     "axios": "^0.26.1",
     "vue": "^3.2.31",
     "vue-router": "^4.0.12",
-    "vue-sidebar-menu": "^5.2.2"
+    "vue-sidebar-menu": "^5.2.2",
+    "vuex": "^4.0.2"
   },
   "devDependencies": {
     "@vicons/ionicons5": "^0.12.0",

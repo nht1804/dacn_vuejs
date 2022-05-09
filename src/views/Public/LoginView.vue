@@ -111,6 +111,7 @@ export default {
         .then(res => {
           let status = res.data.status
           if (status === "SUCCESS") {
+            this.$store.state.userName = this.formLoginValue.userName
             this.message.success(res.data.message);
             document.cookie = `token=${res.data.data.token}`
             this.$router.push({ name: "index" })
@@ -131,7 +132,7 @@ export default {
           if (status === "SUCCESS") {
             this.message.success(res.data.message);
             this.$router.go();
-          }else{
+          } else {
             this.message.error(res.data.message);
           }
         })

@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/Layout/HomeView.vue";
 import axios from "axios";
-
+import store from "@/store/index.js";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -10,6 +10,12 @@ const router = createRouter({
       name: "404",
       component: () => import("../views/404.vue"),
     },
+    {
+      path: "/leasing",
+      name: "leasing",
+      component: () => import("../views/Public/LeasingView.vue"),
+    }
+    ,
     {
       path: "/",
       name: "home",
@@ -145,29 +151,34 @@ function cookie() {
       .map((v) => v.split(/=(.*)/s).map(decodeURIComponent))
   );
 }
-function verifyToken() {
-  return axios
+async function verifyToken() {
+  axios
     .get(`http://localhost:8080/api/Login/Check/${cookie().token}`)
     .then((res) => {
-      return res.data;
+      store.state.userName = null;
+      store.state.roleLevel = null;
+      let data = res.data;
+      if (data.status === "SUCCESS") {
+        store.state.userName = data.data.userName;
+        store.state.roleLevel = data.data.role.roleLevel;
+      }
     })
     .catch((err) => {
       console.error(err);
     });
 }
 router.beforeResolve(async (to, from) => {
-  let data = await verifyToken();
-  if (to.meta.reqAuth) {
-    if (data.status !== "SUCCESS") {
-      return { name: "login" };
-    }
+  verifyToken();
+  if (to.meta.reqAuth && store.state.userName === null && !to.meta.reqRole) {
+    return { name: "login" };
   }
-  if (to.meta.reqAuth && to.meta.reqRole) {
-    if (data.status !== "SUCCESS") {
-      return { name: "login" };
-    } else if (data.data.role.roleLevel > 1) {
-      return { name: "404" };
-    }
+  if (
+    to.meta.reqAuth &&
+    to.meta.reqRole &&
+    store.state.userName === null &&
+    (store.state.roleLevel > 1 || store.state.roleLevel === null)
+  ) {
+    return { name: "404" };
   }
 });
 export default router;

@@ -1,19 +1,23 @@
 <template>
-    <div class="section-container">
-        <div class="owner-bg">
-            <div class="owner-content">
-                <h1> Bạn muốn cho thuê xe ô tô?</h1>
-                <p> <a href="#" class="signnow-link">Đăng ký ngay</a> để trở thành đối tác của chúng tôi.</p>
-                <button class="more-btn">Tìm hiểu thêm</button>
-                <button class="signnow-btn">Đăng ký ngay</button>
-            </div>
-        </div>
+  <div class="section-container">
+    <div class="owner-bg">
+      <div class="owner-content">
+        <h1> Bạn muốn cho thuê xe ô tô?</h1>
+        <p> <a href="#" class="signnow-link">Đăng ký ngay</a> để trở thành đối tác của chúng tôi.</p>
+        <button @click="test()" class="more-btn">Tìm hiểu thêm</button>
+        <button class="signnow-btn">Đăng ký ngay</button>
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
 export default {
-
+  methods: {
+    test() {
+      console.log(this.$store.state.userName)
+    }
+  }
 }
 </script>
 
@@ -23,6 +27,7 @@ export default {
   margin-top: 50px;
   justify-items: center;
 }
+
 .owner-content>h1 {
   color: rgb(255, 255, 255);
   font-size: 40px;

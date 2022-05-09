@@ -20,8 +20,10 @@ export default {
   },
   methods: {
     logout() {
-      this.message.info("Logout")
       document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      this.$store.userName = null;
+      this.$store.roleLevel = null;
+      this.message.info("Logout")
     }
   }
 }

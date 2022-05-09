@@ -3,41 +3,42 @@
     <n-grid x-gap="24" y-gap="12" cols="2">
       <n-gi>
         <div class="car_name">
-          Tên Xe {{ $route.params.id }}
+          {{ car.name }}
         </div>
         <table>
-          <tbody>
+          <tbody v-if="car.detail">
             <tr>
-              <th>Đặc điểm</th>
+              <th>Đặc điểm:</th>
               <td>
-                <p>Số ghế: 4</p>
-                <p>Truyền động:</p>
+                <n-space>
+                  <n-tag type="success">{{ car.detail.seat }} Chỗ</n-tag>
+                  <n-tag type="success" v-if="car.detail.transmission === 'automatic'">Số tự động</n-tag>
+                  <n-tag type="success" v-else>Số sàn</n-tag>
+                </n-space>
               </td>
             </tr>
             <tr>
-              <th>Mô tả</th>
-              <td> mô tả</td>
+              <th>Mô tả:</th>
+              <td>{{ car.detail.about }}</td>
             </tr>
             <tr>
-              <th>Tài xế</th>
-              <td> không </td>
-            </tr>
-            <tr>
-              <th>Chủ sở hữu</th>
-              <td> Tên A</td>
+              <th>Tài xế:</th>
+              <td>
+                <n-tag type="success" v-if="car.detail.hasDriver">Có tài xế</n-tag>
+                <n-tag type="success" v-else>không tài xế</n-tag>
+              </td>
             </tr>
           </tbody>
         </table>
         <div class="wrap-btn">
-          <button class="lease-btn">Thuê</button>
+          <button @click="lease()" class="lease-btn">Thuê</button>
         </div>
       </n-gi>
       <n-gi>
         <h1>Hình ảnh xe</h1>
         <n-image-group>
           <n-space>
-            <n-image v-for="n in 5" :key="n" width="250"
-              src="https://ict-imgs.vgcloud.vn/2021/12/09/12/hinh-dung-ve-mau-apple-car-dua-tren-bang-sang-che-goc-1.jpg" />
+            <n-image v-for="img in car.image" :key="img" width="250" :src="img" />
           </n-space>
         </n-image-group>
       </n-gi>
@@ -63,18 +64,70 @@
 </template>
 
 <script>
+import axios from "axios"
 export default {
-
+  data() {
+    return {
+      car: {},
+      bill: {},
+      user: {},
+      URL: `http://localhost:8080/api/Car/id/`
+    }
+  },
+  mounted() {
+    this.getCarDetail();
+    this.getUserJWT();
+  },
+  methods: {
+    cookie() {
+      return Object.fromEntries(
+        document.cookie
+          .split("; ")
+          .map((v) => v.split(/=(.*)/s).map(decodeURIComponent))
+      );
+    },
+    async getCarDetail() {
+      axios.get(this.URL + this.$route.params.id)
+        .then(res => {
+          this.car = res.data.data;
+        })
+        .catch(err => {
+          console.error(err);
+        })
+    },
+    async getUserJWT() {
+      axios.get(`http://localhost:8080/api/Login/Check/${this.cookie().token}`)
+        .then(res => {
+          this.user = res.data.data;
+        })
+        .catch(err => {
+          console.error(err);
+        })
+    },
+    async lease() {
+      this.bill.carID = this.$route.params.id;
+      this.bill.customerID = this.user.id;
+      axios.post(`http://localhost:8080/api/Bill`, this.bill)
+        .then(res => {
+          console.log(res)
+        })
+        .catch(err => {
+          console.error(err);
+        })
+    }
+  }
 }
 </script>
 
 <style scoped>
-.n-card{
+.n-card {
   cursor: pointer;
 }
+
 .n-card:hover {
   filter: brightness(95%);
 }
+
 .more-car {
   width: 80%;
   margin: auto;
@@ -108,9 +161,11 @@ h1 {
   border-radius: 5px;
   margin: auto;
 }
-td{
+
+td {
   word-wrap: break-word;
 }
+
 .lease-btn:hover {
   background-color: #008741;
 }
@@ -121,7 +176,7 @@ td{
 }
 
 table {
-  padding: 100px 10px;
+  padding: 50px 10px;
 }
 
 .cardetail-wrap {

@@ -121,7 +121,7 @@
                 </n-gi>
                 <n-gi>
                     Transmission
-                    <n-input clearable placeholder="Transmission" v-model:value="showModal.modal.detail.transmission" />
+                    <n-select v-model:value="showModal.modal.detail.transmission" :options="TransmissionOption" />
                 </n-gi>
                 <n-gi span="2">
                     About
@@ -200,6 +200,16 @@ export default {
                 label: "No",
                 value: false
             }],
+            TransmissionOption: [
+                {
+                    label: "Automatic",
+                    value: "automatic"
+                },
+                {
+                    label: "Manual",
+                    value: "manual"
+                }
+            ],
             addImg: false,
             removeImg: false,
         }

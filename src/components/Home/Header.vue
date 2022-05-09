@@ -13,9 +13,10 @@
             <RouterLink :to="{ name: 'tutorial' }">Hướng dẫn</RouterLink>
             <RouterLink :to="{ name: 'about' }">Giới thiệu</RouterLink>
             <div class="header-right">
-                <RouterLink v-if="roleLevel <= 1 && roleLevel !== ''" :to="{ name: 'dashboard' }">Admin</RouterLink>
-                <RouterLink v-if="userName === ''" :to="{ name: 'login' }">Đăng nhập</RouterLink>
-                <RouterLink v-if="userName !== ''" :to="{ name: 'userDetail' }">Hello {{ userName }}</RouterLink>
+                <RouterLink v-if="roleLevel <= 1 && roleLevel !== null" :to="{ name: 'dashboard' }">Admin</RouterLink>
+                <RouterLink v-if="userName === null" :to="{ name: 'login' }">Đăng nhập</RouterLink>
+                <RouterLink v-if="userName !== null" :to="{ name: 'userDetail' }">Hello {{ userName }}
+                </RouterLink>
             </div>
         </div>
     </div>
@@ -24,11 +25,12 @@
 <script>
 import { LogoDesignernews as logo } from '@vicons/ionicons5'
 import axios from 'axios';
+import store from '@/store/index.js'
 export default {
     data() {
         return {
-            userName: "",
-            roleLevel: "",
+            userName: this.$store.state.userName,
+            roleLevel: this.$store.state.roleLevel,
             checkLoginURL: "http://localhost:8080/api/Login/Check/"
         }
     },

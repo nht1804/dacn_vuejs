@@ -55,7 +55,7 @@
           <n-gi v-for="item in car" :key="item.id">
             <n-card @click="carDetail(item.id)" :title="item.name">
               <template #cover>
-                <img :src="item.image" class="proc-img">
+                <img :src="item.image[0]" class="proc-img">
               </template>
               <p>{{ item.price }}$/Giờ</p>
             </n-card>
