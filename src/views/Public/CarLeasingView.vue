@@ -7,7 +7,9 @@
           <tbody>
             <tr>
               <th>Tên xe:</th>
-              <td>{{ car.name }}</td>
+              <td>
+                <router-link :to="{ name: 'carDetail', params: { id: car.id } }"> {{ car.name }}</router-link>
+              </td>
             </tr>
             <tr>
               <th>Số ghế:</th>
@@ -29,15 +31,15 @@
             </tr>
             <tr v-if="Bill.acceptDate !== null">
               <th>Thời gian nhận xe:</th>
-              <td> {{ bill.acceptDate }} </td>
+              <td>
+                <n-time :time="new Date(Bill.acceptDate).getTime()" format="hh:mm dd-MM-yyyy" />
+              </td>
             </tr>
             <tr v-if="Bill.acceptDate !== null">
               <th>Thời gian đang thuê:</th>
-              <td>{{ Math.floor(((now - bibill.acceptDatell) / (60 * 60 * 1000))) }}:{{ Math.floor(((now -
-                  bill.acceptDate)
-                  / (60 * 1000)) %
-                  60)
-              }}:{{ Math.floor(((now - bill.acceptDate) / 1000) % 60) }}</td>
+              <td>{{ Math.floor(((now - new Date(Bill.acceptDate).getTime()) / (60 * 60 * 1000))) }}h:
+                {{ Math.floor(((now - new Date(Bill.acceptDate).getTime()) / (60 * 1000)) % 60) }}p:
+                {{ Math.floor(((now - new Date(Bill.acceptDate).getTime()) / 1000) % 60) }}s</td>
             </tr>
           </tbody>
         </table>
@@ -65,23 +67,23 @@ export default {
     this.getBills();
   },
   methods: {
-    async getBills() {
-      await axios.get(`http://localhost:8080/api/Bill/u=${this.$store.state.userName}`)
-        .then(res => {
-          this.Bill = res.data.data[0];
-          axios.get(`http://localhost:8080/api/Car/id/${res.data.data[0].carID}`)
-            .then(res => {
-              this.car = res.data.data;
-            })
-        })
-        .catch(err => {
-          console.error(err);
-        })
+    cookie() {
+      return Object.fromEntries(
+        document.cookie
+          .split("; ")
+          .map((v) => v.split(/=(.*)/s).map(decodeURIComponent))
+      );
     },
-    async getCarDetail() {
-      axios.get(`http://localhost:8080/api/Car/id/${this.bill.carID}`)
+    async getBills() {
+      await axios.get(`http://localhost:8080/api/Bill/u=${this.$route.meta.userName}`)
         .then(res => {
-          console.log(res)
+          if (res.data.data !== null) {
+            this.Bill = res.data.data[0];
+            axios.get(`http://localhost:8080/api/Car/id/${res.data.data[0].carID}`)
+              .then(res => {
+                this.car = res.data.data;
+              })
+          }
         })
         .catch(err => {
           console.error(err);

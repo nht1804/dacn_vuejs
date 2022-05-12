@@ -1,12 +1,12 @@
 <template>
-  <div class="cardetail-wrap">
+  <div class="cardetail-wrap" v-if="car.detail">
     <n-grid x-gap="24" y-gap="12" cols="2">
       <n-gi>
         <div class="car_name">
           {{ car.name }}
         </div>
         <table>
-          <tbody v-if="car.detail">
+          <tbody>
             <tr>
               <th>Đặc điểm:</th>
               <td>
@@ -27,6 +27,10 @@
                 <n-tag type="success" v-if="car.detail.hasDriver">Có tài xế</n-tag>
                 <n-tag type="success" v-else>không tài xế</n-tag>
               </td>
+            </tr>
+            <tr>
+              <th>Giá thuê:</th>
+              <td><b>{{ car.price }}$/Giờ</b></td>
             </tr>
           </tbody>
         </table>
@@ -64,19 +68,20 @@
 </template>
 
 <script>
+import { useMessage } from "naive-ui";
 import axios from "axios"
 export default {
   data() {
     return {
       car: {},
       bill: {},
-      user: {},
-      URL: `http://localhost:8080/api/Car/id/`
+      userName: null,
+      URL: `http://localhost:8080/api/Car/id/`,
+      message: useMessage(),
     }
   },
   mounted() {
     this.getCarDetail();
-    this.getUserJWT();
   },
   methods: {
     cookie() {
@@ -95,26 +100,42 @@ export default {
           console.error(err);
         })
     },
-    async getUserJWT() {
-      axios.get(`http://localhost:8080/api/Login/Check/${this.cookie().token}`)
-        .then(res => {
-          this.user = res.data.data;
-        })
-        .catch(err => {
-          console.error(err);
-        })
+    async addBill(value, userName) {
+      value.customerID = userName
+      value.carID = this.$route.params.id
+      axios.post(`http://localhost:8080/api/Bill`, value).then(res => {
+        this.message.success(res.data.message)
+      }).catch(err => { console.error(err); })
     },
-    async lease() {
-      this.bill.carID = this.$route.params.id;
-      this.bill.customerID = this.user.id;
-      axios.post(`http://localhost:8080/api/Bill`, this.bill)
-        .then(res => {
-          console.log(res)
-        })
-        .catch(err => {
-          console.error(err);
-        })
+    async checkBill(userName) {
+      axios.get(`http://localhost:8080/api/Bill/u=${userName}`).then(res_bill => {
+        if (res_bill.data.data !== null) {
+          let bill = res_bill.data.data[0];
+          if (bill.status === "WAITING" || bill.status === "PROCESSING") {
+            this.message.error("Bạn đang thuê 1 xe", { duration: 5000 })
+          } else {
+            this.addBill(this.bill, userName)
+            this.message.success(`Thành công`)
+          }
+        } else {
+          this.addBill(this.bill, userName)
+          this.message.success(`Thành công`)
+        }
+      }).catch(err => { console.error(err); })
     }
+    ,
+    async lease() {
+      axios.get(`http://localhost:8080/api/Login/Check/${this.cookie().token}`).then(jwt => {
+        if (jwt.data.data !== null) {
+          this.checkBill(jwt.data.data.userName)
+          this.$router.push({ name: 'carleasing' })
+        }
+        else {
+          this.message.error("Bạn chưa đăng nhập")
+          this.$router.push({ name: 'login' })
+        }
+      }).catch(err => this.message.error(err))
+    },
   }
 }
 </script>

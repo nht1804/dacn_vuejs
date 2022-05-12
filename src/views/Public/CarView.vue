@@ -57,7 +57,16 @@
               <template #cover>
                 <img :src="item.image[0]" class="proc-img">
               </template>
-              <p>{{ item.price }}$/Giờ</p>
+              <n-space>
+                <n-tag type="success" v-if="item.detail.hasDriver">Có tài xế</n-tag>
+                <n-tag type="success" v-if="!item.detail.hasDriver">Xe tự lái</n-tag>
+                <n-tag type="success">{{ item.detail.seat }} Chỗ</n-tag>
+                <n-tag type="success" v-if="item.detail.transmission === 'automatic'">Số tự động</n-tag>
+                <n-tag type="success" v-else>Số sàn</n-tag>
+              </n-space>
+              <n-space justify="end">
+                <b>{{ item.price }}$/Giờ</b>
+              </n-space>
             </n-card>
           </n-gi>
         </n-grid>

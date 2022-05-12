@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <n-result :status="status" :title="title" :description="message">
+        <n-result :status="status" :title="title" :description="message" size="huge">
             Bạn có thể xem chi tiết yêu cầu của mình tại <RouterLink :to="{ name: 'carleasing' }">Xe đang thuê
             </RouterLink>.
             <template #footer>

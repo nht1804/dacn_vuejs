@@ -90,9 +90,14 @@ export default {
           icon: renderIcon(Car)
         },
         {
-          label: 'Bill',
-          key: 'bill-table',
-          disabled: true,
+          label: () => h(RouterLink, {
+            to: {
+              name: "billTable", params: {
+                lang: "en-US"
+              }
+            }
+          }, { default: () => "Bill" }),
+          key: 'billTable',
           icon: renderIcon(BagCheck)
         }
         ]

@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/Layout/HomeView.vue";
 import axios from "axios";
-import store from "@/store/index.js";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -14,8 +13,7 @@ const router = createRouter({
       path: "/leasing",
       name: "leasing",
       component: () => import("../views/Public/LeasingView.vue"),
-    }
-    ,
+    },
     {
       path: "/",
       name: "home",
@@ -55,6 +53,7 @@ const router = createRouter({
           component: () => import("../views/Layout/ProfileView.vue"),
           meta: {
             reqAuth: true,
+            userName: "",
           },
           children: [
             {
@@ -140,6 +139,12 @@ const router = createRouter({
           component: () => import("../views/Admin/RoleTableView.vue"),
           meta: { page: "roleTable" },
         },
+        {
+          path: "BillTable",
+          name: "billTable",
+          component: () => import("../views/Admin/BillTableView.vue"),
+          meta: { page: "billTable" },
+        },
       ],
     },
   ],
@@ -151,34 +156,37 @@ function cookie() {
       .map((v) => v.split(/=(.*)/s).map(decodeURIComponent))
   );
 }
-async function verifyToken() {
-  axios
+function verifyToken() {
+  const data = axios
     .get(`http://localhost:8080/api/Login/Check/${cookie().token}`)
     .then((res) => {
-      store.state.userName = null;
-      store.state.roleLevel = null;
-      let data = res.data;
-      if (data.status === "SUCCESS") {
-        store.state.userName = data.data.userName;
-        store.state.roleLevel = data.data.role.roleLevel;
-      }
+      return res.data;
     })
     .catch((err) => {
       console.error(err);
     });
+  return data;
 }
 router.beforeResolve(async (to, from) => {
-  verifyToken();
-  if (to.meta.reqAuth && store.state.userName === null && !to.meta.reqRole) {
-    return { name: "login" };
+  let data = await verifyToken();
+  if (data.data !== null) {
+    to.meta.userName = data.data.userName;
   }
   if (
     to.meta.reqAuth &&
-    to.meta.reqRole &&
-    store.state.userName === null &&
-    (store.state.roleLevel > 1 || store.state.roleLevel === null)
+    data.data === null &&
+    data.data !== "SUCCESS" &&
+    !to.meta.reqRole
   ) {
-    return { name: "404" };
+    return { name: "login" };
+  }
+  if (to.meta.reqAuth && to.meta.reqRole) {
+    if (
+      (data.data === null && data.data !== "SUCCESS") ||
+      data.data.role.roleLevel > 1
+    ) {
+      return { name: "404" };
+    }
   }
 });
 export default router;

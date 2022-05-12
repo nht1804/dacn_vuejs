@@ -14,9 +14,9 @@ export default new Vuex.Store({
   },
   getters: {},
   actions: {
-    test({ commit }){
-      commit('authJwt')
-    }
+    test({ commit }) {
+      commit("authJwt");
+    },
   },
   mutations: {
     authJwt(state) {
