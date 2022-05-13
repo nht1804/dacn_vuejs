@@ -32,14 +32,16 @@
                 <td>
                     <n-scrollbar style="max-height: 100px">
                         <p v-for="(img, index) in item.image" :key="index">
-                            <a :href="img">
+                            <a :href="img" target="_blank">
                                 Link {{ index + 1 }}
                             </a>
                         </p>
                     </n-scrollbar>
                 </td>
                 <td>
-                    {{ item.detail.seat }}
+                    <n-tag type="info">
+                        {{ item.detail.seat }}
+                    </n-tag>
                 </td>
                 <td>
                     {{ item.detail.transmission }}
@@ -47,7 +49,11 @@
                 <td>
                     {{ item.detail.manufacturer }}
                 </td>
-                <td>{{ item.detail.about }}</td>
+                <td>
+                    <n-ellipsis :tooltip="false" :line-clamp="2">
+                        {{ item.detail.about }}
+                    </n-ellipsis>
+                </td>
                 <td>
                     <n-tag v-if="item.detail.hasDriver" type="success">Yes</n-tag>
                     <n-tag v-else type="error">No</n-tag>
@@ -75,7 +81,7 @@
             </tr>
             <tr>
                 <th colspan="5">
-                    <n-space justify="end">Page</n-space>
+                    <n-pagination v-model:page="page" :page-count="totalPage" />
                 </th>
             </tr>
         </tbody>
@@ -212,6 +218,13 @@ export default {
             ],
             addImg: false,
             removeImg: false,
+            page: 1,
+            totalPage: 0
+        }
+    },
+    watch: {
+        page: function () {
+            this.getCar();
         }
     },
     mounted() {
@@ -220,8 +233,9 @@ export default {
     },
     methods: {
         async getCar() {
-            axios.get(this.carUrl)
+            axios.get(this.carUrl + '/page/' + this.page)
                 .then(res => {
+                    this.totalPage = res.data.totalPage
                     this.car = res.data.data
                 })
                 .catch(err => {

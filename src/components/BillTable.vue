@@ -71,7 +71,7 @@
             </tr>
             <tr>
                 <th colspan="5">
-                    <n-space justify="end">Page</n-space>
+                    <n-pagination v-model:page="page" :page-count="totalPage" />
                 </th>
             </tr>
         </tbody>
@@ -147,6 +147,7 @@ import carDetail from './CarBillDetail.vue'
 import userDetail from './UserBillDetail.vue'
 import axios from "axios"
 import { useMessage } from "naive-ui"
+import { ref } from "vue";
 export default {
     props: {
         status: String,
@@ -159,7 +160,14 @@ export default {
             showModal: {
                 status: false,
                 item: {}
-            }
+            },
+            page: 1,
+            totalPage: 0
+        }
+    },
+    watch: {
+        page: function () {
+            this.getBill();
         }
     },
     mounted() {
@@ -167,9 +175,10 @@ export default {
     },
     methods: {
         async getBill() {
-            this.Bills = await axios.get(this.url + this.status)
+            this.Bills = await axios.get(this.url + this.status + '/page/' + this.page)
                 .then(res => {
                     if (res.data.data.length > 0) {
+                        this.totalPage = res.data.totalPage
                         return res.data.data
                     }
                 })
@@ -182,6 +191,12 @@ export default {
             value.status = "PROCESSING"
             axios.put(`http://localhost:8080/api/Bill`, value)
                 .then(res => {
+                    axios.get(`http://localhost:8080/api/Car/id/${value.carID}`).then(res => {
+                        res.data.data.status = false;
+                        axios.put(`http://localhost:8080/api/Car`, res.data.data)
+                    }).catch(err => {
+                        this.message.error(err);
+                    })
                     this.message.info(res.data.message)
                 })
                 .catch(err => {
@@ -212,10 +227,17 @@ export default {
                     value.total = time * res.data.data.price;
                     axios.put(`http://localhost:8080/api/Bill`, value)
                         .then(res => {
+                            axios.get(`http://localhost:8080/api/Car/id/${value.carID}`).then(res => {
+                                res.data.data.count += 1;
+                                res.data.data.status = true;
+                                axios.put(`http://localhost:8080/api/Car`, res.data.data)
+                            }).catch(err => {
+                                this.message.error(err);
+                            })
                             this.message.info(res.data.message);
                         })
                         .catch(err => {
-                            console.error(err);
+                            this.message.error(err);
                         })
                 })
                 .catch(err => {

@@ -63,7 +63,7 @@
             </tr>
             <tr>
                 <th colspan="5">
-                    <n-space justify="end">Page</n-space>
+                    <n-pagination v-model:page="page" :page-count="totalPage" />
                 </th>
             </tr>
         </tbody>
@@ -167,7 +167,8 @@
             <n-grid x-gap="12" :cols="2">
                 <n-gi>
                     UserName
-                    <n-input maxlength="12" show-count placeholder="UserName" v-model:value="showModal.modal.userName" />
+                    <n-input maxlength="12" show-count placeholder="UserName"
+                        v-model:value="showModal.modal.userName" />
                 </n-gi>
                 <n-gi>
                     Password
@@ -201,6 +202,8 @@ export default {
         return {
             userUrl: 'http://localhost:8080/api/User',
             roleUrl: 'http://localhost:8080/api/Role',
+            page: 1,
+            totalPage: 0,
             message: useMessage(),
             dialog: useDialog(),
             user: null,
@@ -225,6 +228,11 @@ export default {
             }]
         }
     },
+    watch: {
+        page: function () {
+            this.getUserData()
+        }
+    },
     mounted() {
         this.getUserData()
         this.getRoleData()
@@ -243,9 +251,10 @@ export default {
                 })
         }, async getUserData() {
             this.user = null
-            axios.get(this.userUrl)
+            axios.get(this.userUrl + '/page/' + this.page)
                 .then(res => {
-                    this.user = JSON.parse(JSON.stringify(res.data.data))
+                    this.user = res.data.data
+                    this.totalPage = res.data.totalPage
                 })
                 .catch(err => {
                     console.error(err);
