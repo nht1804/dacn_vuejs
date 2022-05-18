@@ -194,6 +194,7 @@ export default {
                     axios.get(`http://localhost:8080/api/Car/id/${value.carID}`).then(res => {
                         res.data.data.status = false;
                         axios.put(`http://localhost:8080/api/Car`, res.data.data)
+                        this.$router.go();
                     }).catch(err => {
                         this.message.error(err);
                     })
@@ -209,6 +210,7 @@ export default {
             axios.put(`http://localhost:8080/api/Bill`, value)
                 .then(res => {
                     this.message.info(res.data.message);
+                    this.$router.go();
                 })
                 .catch(err => {
                     console.error(err);
@@ -231,6 +233,7 @@ export default {
                                 res.data.data.count += 1;
                                 res.data.data.status = true;
                                 axios.put(`http://localhost:8080/api/Car`, res.data.data)
+                                this.$router.go();
                             }).catch(err => {
                                 this.message.error(err);
                             })

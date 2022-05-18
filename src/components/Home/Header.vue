@@ -25,12 +25,11 @@
 <script>
 import { LogoDesignernews as logo } from '@vicons/ionicons5'
 import axios from 'axios';
-import store from '@/store/index.js'
 export default {
     data() {
         return {
-            userName: this.$store.state.userName,
-            roleLevel: this.$store.state.roleLevel,
+            userName: null,
+            roleLevel: null,
             checkLoginURL: "http://localhost:8080/api/Login/Check/"
         }
     },

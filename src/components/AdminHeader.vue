@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="header-admin">
-      <b>Page title</b>
+      <b>{{this.$route.meta.title}}</b>
       <div class="user">
         <n-dropdown size="large" :options="options">
           <n-button type="info" round circle dashed>
