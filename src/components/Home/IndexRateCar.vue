@@ -6,27 +6,25 @@
       </div>
       <n-tabs type="line" animated size="large">
         <n-tab-pane name="noDriver" tab="Xe có tài xế">
-          <n-grid x-gap="13" y-gap="20" cols="4">
-            <n-gi v-for="n in 4" :key="n">
-              <n-card title="Car Title" @click="func">
+          <n-grid v-if="hasDriverCar" x-gap="13" y-gap="20" cols="4">
+            <n-gi v-for="item in hasDriverCar" :key="item.id">
+              <n-card :title="item.name" @click="$router.push({ name: 'carDetail', params: { id: item.id } })">
                 <template #cover>
-                  <img
-                    src="https://ict-imgs.vgcloud.vn/2021/12/09/12/hinh-dung-ve-mau-apple-car-dua-tren-bang-sang-che-goc-1.jpg"
-                    class="proc-img">
+                  <img :src="item.image[0]" class="proc-img">
                 </template>
-                <p>500$</p>
+                <p>{{ item.price }}$</p>
               </n-card>
             </n-gi>
           </n-grid>
         </n-tab-pane>
         <n-tab-pane name="hasDriver" tab="Xe tự lái">
-          <n-grid x-gap="13" y-gap="20" cols="4">
-            <n-gi v-for="n in 4" :key="n">
-              <n-card title="Car Title" @click="func">
+          <n-grid v-if="noDriverCar" x-gap="13" y-gap="20" cols="4">
+            <n-gi v-for="n in noDriverCar" :key="n">
+              <n-card :title="n.name" @click="$router.push({ name: 'carDetail', params: { id: n.id } })">
                 <template #cover>
-                  <img src="https://cms-i.autodaily.vn/du-lieu/2022/04/14/2022-hyundai-ioniq-5-42.jpg" class="proc-img">
+                  <img :src="n.image[0]" class="proc-img">
                 </template>
-                <p>Price</p>
+                <p>{{ n.price }}$</p>
               </n-card>
             </n-gi>
           </n-grid>
@@ -37,10 +35,39 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
+  data() {
+    return {
+      hasDriverCar: [],
+      noDriverCar: []
+    }
+  },
+  mounted() {
+    this.getHasDriverCar()
+    this.getNoDriverCar()
+  },
   methods: {
     func() {
       alert("routerLink")
+    },
+    async getHasDriverCar() {
+      await axios.get(`http://localhost:8080/api/Car/HotCar?d=true`)
+        .then(res => {
+          this.hasDriverCar = res.data.data
+        })
+        .catch(err => {
+          console.error(err);
+        })
+    },
+    async getNoDriverCar() {
+      await axios.get(`http://localhost:8080/api/Car/HotCar?d=false`)
+        .then(res => {
+          this.noDriverCar = res.data.data
+        })
+        .catch(err => {
+          console.error(err);
+        })
     }
   }
 }

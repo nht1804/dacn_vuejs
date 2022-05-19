@@ -67,13 +67,6 @@ export default {
     this.getBills();
   },
   methods: {
-    cookie() {
-      return Object.fromEntries(
-        document.cookie
-          .split("; ")
-          .map((v) => v.split(/=(.*)/s).map(decodeURIComponent))
-      );
-    },
     async getBills() {
       await axios.get(`http://localhost:8080/api/Bill/u=${this.$route.meta.userName}`)
         .then(res => {

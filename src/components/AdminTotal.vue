@@ -46,11 +46,10 @@ export default {
         async getData() {
             axios.get(this.url)
                 .then(res => {
-                    if (res.data.data.count) {
-                        this.count = res.data.data.count
-                    }
-                    if (res.data.data[0].count) {
+                    if (Array.isArray(res.data.data) && res.data.data.length > 0) {
                         this.count = res.data.data[0].count
+                    } else {
+                        this.count = res.data.data.count
                     }
                 })
                 .catch(err => {

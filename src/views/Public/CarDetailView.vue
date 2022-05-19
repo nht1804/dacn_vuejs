@@ -50,16 +50,16 @@
   </div>
   <div class="more-car">
     <div class="more-car_title">
-      Xe liên quan
+      Xe ngẫu nhiên
     </div>
     <div class="car_list">
       <n-grid x-gap="13" y-gap="20" cols="4">
-        <n-gi v-for="n in 4" :key="n">
-          <n-card title="Car Title">
+        <n-gi v-for="n in randomCar" :key="n">
+          <n-card :title="n.name" @click="$router.push({ name: 'carDetail', params: { id: n.id } })">
             <template #cover>
-              <img src="https://cms-i.autodaily.vn/du-lieu/2022/04/14/2022-hyundai-ioniq-5-42.jpg" class="proc-img">
+              <img :src="n.image[0]" class="proc-img">
             </template>
-            <p>Price</p>
+            <p>{{ n.price }}$</p>
           </n-card>
         </n-gi>
       </n-grid>
@@ -73,6 +73,7 @@ import axios from "axios"
 export default {
   data() {
     return {
+      randomCar: [],
       car: {},
       bill: {},
       userName: null,
@@ -80,10 +81,35 @@ export default {
       message: useMessage(),
     }
   },
+  watch: {
+    $route(to, from) {
+      if (to !== from) {
+        location.reload();
+      }
+    }
+  },
   mounted() {
     this.getCarDetail();
+    this.getRandomCar(4);
   },
   methods: {
+    onCompleteReload() {
+      if (this.existingData) {
+        this.$router.go(0)
+      }
+    },
+    async getRandomCar(size) {
+      {
+        axios.get(`http://localhost:8080/api/Car/random?size=${size}`)
+          .then(res => {
+            this.randomCar = res.data.data
+          })
+          .catch(err => {
+            console.error(err);
+          })
+      }
+    }
+    ,
     cookie() {
       return Object.fromEntries(
         document.cookie
@@ -104,7 +130,7 @@ export default {
       value.customerID = userName
       value.carID = this.$route.params.id
       axios.post(`http://localhost:8080/api/Bill`, value).then(res => {
-        this.message.success(res.data.message)
+        this.$router.push({ name: 'carleasing' })
       }).catch(err => { console.error(err); })
     },
     async checkBill(userName) {
@@ -113,6 +139,7 @@ export default {
           let bill = res_bill.data.data[0];
           if (bill.status === "WAITING" || bill.status === "PROCESSING") {
             this.message.error("Bạn đang thuê 1 xe", { duration: 5000 })
+            this.$router.push({ name: 'carleasing' })
           } else {
             this.addBill(this.bill, userName)
             this.message.success(`Thành công`)
@@ -128,7 +155,6 @@ export default {
       axios.get(`http://localhost:8080/api/Login/Check/${this.cookie().token}`).then(jwt => {
         if (jwt.data.data !== null) {
           this.checkBill(jwt.data.data.userName)
-          this.$router.push({ name: 'carleasing' })
         }
         else {
           this.message.error("Bạn chưa đăng nhập")
